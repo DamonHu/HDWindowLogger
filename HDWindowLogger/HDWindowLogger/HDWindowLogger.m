@@ -241,12 +241,11 @@
 #pragma mark - UITableViewDelegate
 - (CGFloat)tableView:(UITableView *)tableView heightForRowAtIndexPath:(NSIndexPath *)indexPath {
     HDWindowLoggerItem *item = [self.mLogDataArray objectAtIndex:indexPath.row];
-
-    NSMutableParagraphStyle *style = [[NSParagraphStyle defaultParagraphStyle] mutableCopy];
-    style.lineBreakMode = NSLineBreakByWordWrapping;
-    style.alignment = NSTextAlignmentLeft;
-    
-    CGSize size = [item.mLogContent boundingRectWithSize:CGSizeMake([UIScreen mainScreen].bounds.size.width, MAXFLOAT) options:NSStringDrawingUsesLineFragmentOrigin | NSStringDrawingUsesFontLeading attributes:@{NSFontAttributeName:[UIFont systemFontOfSize:13], NSParagraphStyleAttributeName:style} context:nil].size;
+    UILabel *label = [[UILabel alloc] init];
+    label.numberOfLines = 0;
+    label.font = [UIFont systemFontOfSize:13];
+    [label setText:item.mLogContent];
+    CGSize size = [label sizeThatFits:CGSizeMake([UIScreen mainScreen].bounds.size.width, MAXFLOAT)];
     return ceil(size.height) + 1;
 }
 
