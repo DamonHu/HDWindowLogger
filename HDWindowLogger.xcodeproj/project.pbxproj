@@ -1,0 +1,598 @@
+// !$*UTF8*$!
+{
+	archiveVersion = 1;
+	classes = {
+	};
+	objectVersion = 50;
+	objects = {
+
+/* Begin PBXBuildFile section */
+		E40F7D09229CE0A700CDB3DB /* AppDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = E40F7D08229CE0A700CDB3DB /* AppDelegate.m */; };
+		E40F7D0C229CE0A700CDB3DB /* ViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = E40F7D0B229CE0A700CDB3DB /* ViewController.m */; };
+		E40F7D0F229CE0A700CDB3DB /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = E40F7D0D229CE0A700CDB3DB /* Main.storyboard */; };
+		E40F7D11229CE0A800CDB3DB /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = E40F7D10229CE0A800CDB3DB /* Assets.xcassets */; };
+		E40F7D14229CE0A800CDB3DB /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = E40F7D12229CE0A800CDB3DB /* LaunchScreen.storyboard */; };
+		E40F7D17229CE0A800CDB3DB /* main.m in Sources */ = {isa = PBXBuildFile; fileRef = E40F7D16229CE0A800CDB3DB /* main.m */; };
+		E40F7D21229CE0A800CDB3DB /* HDWindowLoggerTests.m in Sources */ = {isa = PBXBuildFile; fileRef = E40F7D20229CE0A800CDB3DB /* HDWindowLoggerTests.m */; };
+		E40F7D2C229CE0A800CDB3DB /* HDWindowLoggerUITests.m in Sources */ = {isa = PBXBuildFile; fileRef = E40F7D2B229CE0A800CDB3DB /* HDWindowLoggerUITests.m */; };
+		E40F7D3C229CE0BF00CDB3DB /* HDWindowLogger.m in Sources */ = {isa = PBXBuildFile; fileRef = E40F7D3B229CE0BF00CDB3DB /* HDWindowLogger.m */; };
+		E40F7D3F229CF7C700CDB3DB /* HDLoggerTableViewCell.m in Sources */ = {isa = PBXBuildFile; fileRef = E40F7D3E229CF7C700CDB3DB /* HDLoggerTableViewCell.m */; };
+/* End PBXBuildFile section */
+
+/* Begin PBXContainerItemProxy section */
+		E40F7D1D229CE0A800CDB3DB /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = E40F7CFC229CE0A700CDB3DB /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = E40F7D03229CE0A700CDB3DB;
+			remoteInfo = HDWindowLogger;
+		};
+		E40F7D28229CE0A800CDB3DB /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = E40F7CFC229CE0A700CDB3DB /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = E40F7D03229CE0A700CDB3DB;
+			remoteInfo = HDWindowLogger;
+		};
+/* End PBXContainerItemProxy section */
+
+/* Begin PBXFileReference section */
+		E40F7D04229CE0A700CDB3DB /* HDWindowLogger.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = HDWindowLogger.app; sourceTree = BUILT_PRODUCTS_DIR; };
+		E40F7D07229CE0A700CDB3DB /* AppDelegate.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = AppDelegate.h; sourceTree = "<group>"; };
+		E40F7D08229CE0A700CDB3DB /* AppDelegate.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = AppDelegate.m; sourceTree = "<group>"; };
+		E40F7D0A229CE0A700CDB3DB /* ViewController.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = ViewController.h; sourceTree = "<group>"; };
+		E40F7D0B229CE0A700CDB3DB /* ViewController.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = ViewController.m; sourceTree = "<group>"; };
+		E40F7D0E229CE0A700CDB3DB /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/Main.storyboard; sourceTree = "<group>"; };
+		E40F7D10229CE0A800CDB3DB /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
+		E40F7D13229CE0A800CDB3DB /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/LaunchScreen.storyboard; sourceTree = "<group>"; };
+		E40F7D15229CE0A800CDB3DB /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
+		E40F7D16229CE0A800CDB3DB /* main.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = main.m; sourceTree = "<group>"; };
+		E40F7D1C229CE0A800CDB3DB /* HDWindowLoggerTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = HDWindowLoggerTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
+		E40F7D20229CE0A800CDB3DB /* HDWindowLoggerTests.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = HDWindowLoggerTests.m; sourceTree = "<group>"; };
+		E40F7D22229CE0A800CDB3DB /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
+		E40F7D27229CE0A800CDB3DB /* HDWindowLoggerUITests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = HDWindowLoggerUITests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
+		E40F7D2B229CE0A800CDB3DB /* HDWindowLoggerUITests.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = HDWindowLoggerUITests.m; sourceTree = "<group>"; };
+		E40F7D2D229CE0A800CDB3DB /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
+		E40F7D3A229CE0BF00CDB3DB /* HDWindowLogger.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = HDWindowLogger.h; sourceTree = "<group>"; };
+		E40F7D3B229CE0BF00CDB3DB /* HDWindowLogger.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = HDWindowLogger.m; sourceTree = "<group>"; };
+		E40F7D3D229CF7C700CDB3DB /* HDLoggerTableViewCell.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = HDLoggerTableViewCell.h; sourceTree = "<group>"; };
+		E40F7D3E229CF7C700CDB3DB /* HDLoggerTableViewCell.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = HDLoggerTableViewCell.m; sourceTree = "<group>"; };
+/* End PBXFileReference section */
+
+/* Begin PBXFrameworksBuildPhase section */
+		E40F7D01229CE0A700CDB3DB /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		E40F7D19229CE0A800CDB3DB /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		E40F7D24229CE0A800CDB3DB /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXFrameworksBuildPhase section */
+
+/* Begin PBXGroup section */
+		E40F7CFB229CE0A700CDB3DB = {
+			isa = PBXGroup;
+			children = (
+				E40F7D06229CE0A700CDB3DB /* HDWindowLogger */,
+				E40F7D1F229CE0A800CDB3DB /* HDWindowLoggerTests */,
+				E40F7D2A229CE0A800CDB3DB /* HDWindowLoggerUITests */,
+				E40F7D05229CE0A700CDB3DB /* Products */,
+			);
+			sourceTree = "<group>";
+		};
+		E40F7D05229CE0A700CDB3DB /* Products */ = {
+			isa = PBXGroup;
+			children = (
+				E40F7D04229CE0A700CDB3DB /* HDWindowLogger.app */,
+				E40F7D1C229CE0A800CDB3DB /* HDWindowLoggerTests.xctest */,
+				E40F7D27229CE0A800CDB3DB /* HDWindowLoggerUITests.xctest */,
+			);
+			name = Products;
+			sourceTree = "<group>";
+		};
+		E40F7D06229CE0A700CDB3DB /* HDWindowLogger */ = {
+			isa = PBXGroup;
+			children = (
+				E40F7D39229CE0B100CDB3DB /* HDWindowLogger */,
+				E40F7D07229CE0A700CDB3DB /* AppDelegate.h */,
+				E40F7D08229CE0A700CDB3DB /* AppDelegate.m */,
+				E40F7D0A229CE0A700CDB3DB /* ViewController.h */,
+				E40F7D0B229CE0A700CDB3DB /* ViewController.m */,
+				E40F7D0D229CE0A700CDB3DB /* Main.storyboard */,
+				E40F7D10229CE0A800CDB3DB /* Assets.xcassets */,
+				E40F7D12229CE0A800CDB3DB /* LaunchScreen.storyboard */,
+				E40F7D15229CE0A800CDB3DB /* Info.plist */,
+				E40F7D16229CE0A800CDB3DB /* main.m */,
+			);
+			path = HDWindowLogger;
+			sourceTree = "<group>";
+		};
+		E40F7D1F229CE0A800CDB3DB /* HDWindowLoggerTests */ = {
+			isa = PBXGroup;
+			children = (
+				E40F7D20229CE0A800CDB3DB /* HDWindowLoggerTests.m */,
+				E40F7D22229CE0A800CDB3DB /* Info.plist */,
+			);
+			path = HDWindowLoggerTests;
+			sourceTree = "<group>";
+		};
+		E40F7D2A229CE0A800CDB3DB /* HDWindowLoggerUITests */ = {
+			isa = PBXGroup;
+			children = (
+				E40F7D2B229CE0A800CDB3DB /* HDWindowLoggerUITests.m */,
+				E40F7D2D229CE0A800CDB3DB /* Info.plist */,
+			);
+			path = HDWindowLoggerUITests;
+			sourceTree = "<group>";
+		};
+		E40F7D39229CE0B100CDB3DB /* HDWindowLogger */ = {
+			isa = PBXGroup;
+			children = (
+				E40F7D3A229CE0BF00CDB3DB /* HDWindowLogger.h */,
+				E40F7D3B229CE0BF00CDB3DB /* HDWindowLogger.m */,
+				E40F7D3D229CF7C700CDB3DB /* HDLoggerTableViewCell.h */,
+				E40F7D3E229CF7C700CDB3DB /* HDLoggerTableViewCell.m */,
+			);
+			path = HDWindowLogger;
+			sourceTree = "<group>";
+		};
+/* End PBXGroup section */
+
+/* Begin PBXNativeTarget section */
+		E40F7D03229CE0A700CDB3DB /* HDWindowLogger */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = E40F7D30229CE0A800CDB3DB /* Build configuration list for PBXNativeTarget "HDWindowLogger" */;
+			buildPhases = (
+				E40F7D00229CE0A700CDB3DB /* Sources */,
+				E40F7D01229CE0A700CDB3DB /* Frameworks */,
+				E40F7D02229CE0A700CDB3DB /* Resources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+			);
+			name = HDWindowLogger;
+			productName = HDWindowLogger;
+			productReference = E40F7D04229CE0A700CDB3DB /* HDWindowLogger.app */;
+			productType = "com.apple.product-type.application";
+		};
+		E40F7D1B229CE0A800CDB3DB /* HDWindowLoggerTests */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = E40F7D33229CE0A800CDB3DB /* Build configuration list for PBXNativeTarget "HDWindowLoggerTests" */;
+			buildPhases = (
+				E40F7D18229CE0A800CDB3DB /* Sources */,
+				E40F7D19229CE0A800CDB3DB /* Frameworks */,
+				E40F7D1A229CE0A800CDB3DB /* Resources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+				E40F7D1E229CE0A800CDB3DB /* PBXTargetDependency */,
+			);
+			name = HDWindowLoggerTests;
+			productName = HDWindowLoggerTests;
+			productReference = E40F7D1C229CE0A800CDB3DB /* HDWindowLoggerTests.xctest */;
+			productType = "com.apple.product-type.bundle.unit-test";
+		};
+		E40F7D26229CE0A800CDB3DB /* HDWindowLoggerUITests */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = E40F7D36229CE0A800CDB3DB /* Build configuration list for PBXNativeTarget "HDWindowLoggerUITests" */;
+			buildPhases = (
+				E40F7D23229CE0A800CDB3DB /* Sources */,
+				E40F7D24229CE0A800CDB3DB /* Frameworks */,
+				E40F7D25229CE0A800CDB3DB /* Resources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+				E40F7D29229CE0A800CDB3DB /* PBXTargetDependency */,
+			);
+			name = HDWindowLoggerUITests;
+			productName = HDWindowLoggerUITests;
+			productReference = E40F7D27229CE0A800CDB3DB /* HDWindowLoggerUITests.xctest */;
+			productType = "com.apple.product-type.bundle.ui-testing";
+		};
+/* End PBXNativeTarget section */
+
+/* Begin PBXProject section */
+		E40F7CFC229CE0A700CDB3DB /* Project object */ = {
+			isa = PBXProject;
+			attributes = {
+				LastUpgradeCheck = 1020;
+				ORGANIZATIONNAME = Damon;
+				TargetAttributes = {
+					E40F7D03229CE0A700CDB3DB = {
+						CreatedOnToolsVersion = 10.2.1;
+					};
+					E40F7D1B229CE0A800CDB3DB = {
+						CreatedOnToolsVersion = 10.2.1;
+						TestTargetID = E40F7D03229CE0A700CDB3DB;
+					};
+					E40F7D26229CE0A800CDB3DB = {
+						CreatedOnToolsVersion = 10.2.1;
+						TestTargetID = E40F7D03229CE0A700CDB3DB;
+					};
+				};
+			};
+			buildConfigurationList = E40F7CFF229CE0A700CDB3DB /* Build configuration list for PBXProject "HDWindowLogger" */;
+			compatibilityVersion = "Xcode 9.3";
+			developmentRegion = en;
+			hasScannedForEncodings = 0;
+			knownRegions = (
+				en,
+				Base,
+			);
+			mainGroup = E40F7CFB229CE0A700CDB3DB;
+			productRefGroup = E40F7D05229CE0A700CDB3DB /* Products */;
+			projectDirPath = "";
+			projectRoot = "";
+			targets = (
+				E40F7D03229CE0A700CDB3DB /* HDWindowLogger */,
+				E40F7D1B229CE0A800CDB3DB /* HDWindowLoggerTests */,
+				E40F7D26229CE0A800CDB3DB /* HDWindowLoggerUITests */,
+			);
+		};
+/* End PBXProject section */
+
+/* Begin PBXResourcesBuildPhase section */
+		E40F7D02229CE0A700CDB3DB /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				E40F7D14229CE0A800CDB3DB /* LaunchScreen.storyboard in Resources */,
+				E40F7D11229CE0A800CDB3DB /* Assets.xcassets in Resources */,
+				E40F7D0F229CE0A700CDB3DB /* Main.storyboard in Resources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		E40F7D1A229CE0A800CDB3DB /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		E40F7D25229CE0A800CDB3DB /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXResourcesBuildPhase section */
+
+/* Begin PBXSourcesBuildPhase section */
+		E40F7D00229CE0A700CDB3DB /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				E40F7D0C229CE0A700CDB3DB /* ViewController.m in Sources */,
+				E40F7D17229CE0A800CDB3DB /* main.m in Sources */,
+				E40F7D09229CE0A700CDB3DB /* AppDelegate.m in Sources */,
+				E40F7D3F229CF7C700CDB3DB /* HDLoggerTableViewCell.m in Sources */,
+				E40F7D3C229CE0BF00CDB3DB /* HDWindowLogger.m in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		E40F7D18229CE0A800CDB3DB /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				E40F7D21229CE0A800CDB3DB /* HDWindowLoggerTests.m in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		E40F7D23229CE0A800CDB3DB /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				E40F7D2C229CE0A800CDB3DB /* HDWindowLoggerUITests.m in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXSourcesBuildPhase section */
+
+/* Begin PBXTargetDependency section */
+		E40F7D1E229CE0A800CDB3DB /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = E40F7D03229CE0A700CDB3DB /* HDWindowLogger */;
+			targetProxy = E40F7D1D229CE0A800CDB3DB /* PBXContainerItemProxy */;
+		};
+		E40F7D29229CE0A800CDB3DB /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = E40F7D03229CE0A700CDB3DB /* HDWindowLogger */;
+			targetProxy = E40F7D28229CE0A800CDB3DB /* PBXContainerItemProxy */;
+		};
+/* End PBXTargetDependency section */
+
+/* Begin PBXVariantGroup section */
+		E40F7D0D229CE0A700CDB3DB /* Main.storyboard */ = {
+			isa = PBXVariantGroup;
+			children = (
+				E40F7D0E229CE0A700CDB3DB /* Base */,
+			);
+			name = Main.storyboard;
+			sourceTree = "<group>";
+		};
+		E40F7D12229CE0A800CDB3DB /* LaunchScreen.storyboard */ = {
+			isa = PBXVariantGroup;
+			children = (
+				E40F7D13229CE0A800CDB3DB /* Base */,
+			);
+			name = LaunchScreen.storyboard;
+			sourceTree = "<group>";
+		};
+/* End PBXVariantGroup section */
+
+/* Begin XCBuildConfiguration section */
+		E40F7D2E229CE0A800CDB3DB /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				CLANG_ANALYZER_NONNULL = YES;
+				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++14";
+				CLANG_CXX_LIBRARY = "libc++";
+				CLANG_ENABLE_MODULES = YES;
+				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_ENABLE_OBJC_WEAK = YES;
+				CLANG_WARN_BLOCK_CAPTURE_AUTORELEASING = YES;
+				CLANG_WARN_BOOL_CONVERSION = YES;
+				CLANG_WARN_COMMA = YES;
+				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_DEPRECATED_OBJC_IMPLEMENTATIONS = YES;
+				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
+				CLANG_WARN_DOCUMENTATION_COMMENTS = YES;
+				CLANG_WARN_EMPTY_BODY = YES;
+				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INFINITE_RECURSION = YES;
+				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN_NON_LITERAL_NULL_CONVERSION = YES;
+				CLANG_WARN_OBJC_IMPLICIT_RETAIN_SELF = YES;
+				CLANG_WARN_OBJC_LITERAL_CONVERSION = YES;
+				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_RANGE_LOOP_ANALYSIS = YES;
+				CLANG_WARN_STRICT_PROTOTYPES = YES;
+				CLANG_WARN_SUSPICIOUS_MOVE = YES;
+				CLANG_WARN_UNGUARDED_AVAILABILITY = YES_AGGRESSIVE;
+				CLANG_WARN_UNREACHABLE_CODE = YES;
+				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				CODE_SIGN_IDENTITY = "iPhone Developer";
+				COPY_PHASE_STRIP = NO;
+				DEBUG_INFORMATION_FORMAT = dwarf;
+				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				ENABLE_TESTABILITY = YES;
+				GCC_C_LANGUAGE_STANDARD = gnu11;
+				GCC_DYNAMIC_NO_PIC = NO;
+				GCC_NO_COMMON_BLOCKS = YES;
+				GCC_OPTIMIZATION_LEVEL = 0;
+				GCC_PREPROCESSOR_DEFINITIONS = (
+					"DEBUG=1",
+					"$(inherited)",
+				);
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
+				GCC_WARN_UNDECLARED_SELECTOR = YES;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
+				GCC_WARN_UNUSED_FUNCTION = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				IPHONEOS_DEPLOYMENT_TARGET = 12.2;
+				MTL_ENABLE_DEBUG_INFO = INCLUDE_SOURCE;
+				MTL_FAST_MATH = YES;
+				ONLY_ACTIVE_ARCH = YES;
+				SDKROOT = iphoneos;
+			};
+			name = Debug;
+		};
+		E40F7D2F229CE0A800CDB3DB /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				CLANG_ANALYZER_NONNULL = YES;
+				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++14";
+				CLANG_CXX_LIBRARY = "libc++";
+				CLANG_ENABLE_MODULES = YES;
+				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_ENABLE_OBJC_WEAK = YES;
+				CLANG_WARN_BLOCK_CAPTURE_AUTORELEASING = YES;
+				CLANG_WARN_BOOL_CONVERSION = YES;
+				CLANG_WARN_COMMA = YES;
+				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_DEPRECATED_OBJC_IMPLEMENTATIONS = YES;
+				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
+				CLANG_WARN_DOCUMENTATION_COMMENTS = YES;
+				CLANG_WARN_EMPTY_BODY = YES;
+				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INFINITE_RECURSION = YES;
+				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN_NON_LITERAL_NULL_CONVERSION = YES;
+				CLANG_WARN_OBJC_IMPLICIT_RETAIN_SELF = YES;
+				CLANG_WARN_OBJC_LITERAL_CONVERSION = YES;
+				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_RANGE_LOOP_ANALYSIS = YES;
+				CLANG_WARN_STRICT_PROTOTYPES = YES;
+				CLANG_WARN_SUSPICIOUS_MOVE = YES;
+				CLANG_WARN_UNGUARDED_AVAILABILITY = YES_AGGRESSIVE;
+				CLANG_WARN_UNREACHABLE_CODE = YES;
+				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				CODE_SIGN_IDENTITY = "iPhone Developer";
+				COPY_PHASE_STRIP = NO;
+				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
+				ENABLE_NS_ASSERTIONS = NO;
+				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				GCC_C_LANGUAGE_STANDARD = gnu11;
+				GCC_NO_COMMON_BLOCKS = YES;
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
+				GCC_WARN_UNDECLARED_SELECTOR = YES;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
+				GCC_WARN_UNUSED_FUNCTION = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				IPHONEOS_DEPLOYMENT_TARGET = 12.2;
+				MTL_ENABLE_DEBUG_INFO = NO;
+				MTL_FAST_MATH = YES;
+				SDKROOT = iphoneos;
+				VALIDATE_PRODUCT = YES;
+			};
+			name = Release;
+		};
+		E40F7D31229CE0A800CDB3DB /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				CODE_SIGN_STYLE = Automatic;
+				INFOPLIST_FILE = HDWindowLogger/Info.plist;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+				);
+				PRODUCT_BUNDLE_IDENTIFIER = com.lazypig.HDWindowLogger;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				TARGETED_DEVICE_FAMILY = "1,2";
+			};
+			name = Debug;
+		};
+		E40F7D32229CE0A800CDB3DB /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				CODE_SIGN_STYLE = Automatic;
+				INFOPLIST_FILE = HDWindowLogger/Info.plist;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+				);
+				PRODUCT_BUNDLE_IDENTIFIER = com.lazypig.HDWindowLogger;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				TARGETED_DEVICE_FAMILY = "1,2";
+			};
+			name = Release;
+		};
+		E40F7D34229CE0A800CDB3DB /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				BUNDLE_LOADER = "$(TEST_HOST)";
+				CODE_SIGN_STYLE = Automatic;
+				INFOPLIST_FILE = HDWindowLoggerTests/Info.plist;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+					"@loader_path/Frameworks",
+				);
+				PRODUCT_BUNDLE_IDENTIFIER = com.lazypig.HDWindowLoggerTests;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				TARGETED_DEVICE_FAMILY = "1,2";
+				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/HDWindowLogger.app/HDWindowLogger";
+			};
+			name = Debug;
+		};
+		E40F7D35229CE0A800CDB3DB /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				BUNDLE_LOADER = "$(TEST_HOST)";
+				CODE_SIGN_STYLE = Automatic;
+				INFOPLIST_FILE = HDWindowLoggerTests/Info.plist;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+					"@loader_path/Frameworks",
+				);
+				PRODUCT_BUNDLE_IDENTIFIER = com.lazypig.HDWindowLoggerTests;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				TARGETED_DEVICE_FAMILY = "1,2";
+				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/HDWindowLogger.app/HDWindowLogger";
+			};
+			name = Release;
+		};
+		E40F7D37229CE0A800CDB3DB /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				CODE_SIGN_STYLE = Automatic;
+				INFOPLIST_FILE = HDWindowLoggerUITests/Info.plist;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+					"@loader_path/Frameworks",
+				);
+				PRODUCT_BUNDLE_IDENTIFIER = com.lazypig.HDWindowLoggerUITests;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				TARGETED_DEVICE_FAMILY = "1,2";
+				TEST_TARGET_NAME = HDWindowLogger;
+			};
+			name = Debug;
+		};
+		E40F7D38229CE0A800CDB3DB /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				CODE_SIGN_STYLE = Automatic;
+				INFOPLIST_FILE = HDWindowLoggerUITests/Info.plist;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+					"@loader_path/Frameworks",
+				);
+				PRODUCT_BUNDLE_IDENTIFIER = com.lazypig.HDWindowLoggerUITests;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				TARGETED_DEVICE_FAMILY = "1,2";
+				TEST_TARGET_NAME = HDWindowLogger;
+			};
+			name = Release;
+		};
+/* End XCBuildConfiguration section */
+
+/* Begin XCConfigurationList section */
+		E40F7CFF229CE0A700CDB3DB /* Build configuration list for PBXProject "HDWindowLogger" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				E40F7D2E229CE0A800CDB3DB /* Debug */,
+				E40F7D2F229CE0A800CDB3DB /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		E40F7D30229CE0A800CDB3DB /* Build configuration list for PBXNativeTarget "HDWindowLogger" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				E40F7D31229CE0A800CDB3DB /* Debug */,
+				E40F7D32229CE0A800CDB3DB /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		E40F7D33229CE0A800CDB3DB /* Build configuration list for PBXNativeTarget "HDWindowLoggerTests" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				E40F7D34229CE0A800CDB3DB /* Debug */,
+				E40F7D35229CE0A800CDB3DB /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		E40F7D36229CE0A800CDB3DB /* Build configuration list for PBXNativeTarget "HDWindowLoggerUITests" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				E40F7D37229CE0A800CDB3DB /* Debug */,
+				E40F7D38229CE0A800CDB3DB /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+/* End XCConfigurationList section */
+	};
+	rootObject = E40F7CFC229CE0A700CDB3DB /* Project object */;
+}
