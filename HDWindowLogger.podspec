@@ -1,6 +1,6 @@
 Pod::Spec.new do |s|
 s.name = 'HDWindowLogger'
-s.version = '1.0.1'
+s.version = '1.1.0'
 s.license= { :type => "MIT", :file => "LICENSE" }
 s.summary = 'iOS端将输出日志log悬浮显示在屏幕上，便于在真机调试信息'
 s.homepage = 'https://github.com/DamonHu/HDNetTools'
