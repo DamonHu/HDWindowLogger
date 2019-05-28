@@ -29,6 +29,7 @@ typedef NS_ENUM(NSUInteger, HDLogType) {
 @interface HDWindowLoggerItem : NSObject
 @property (assign, nonatomic) HDLogType mLogItemType;
 @property (copy, nonatomic) NSString *mLogContent;
+@property (strong, nonatomic) NSDate *mCreateDate;
 @end
 
 #pragma mark -

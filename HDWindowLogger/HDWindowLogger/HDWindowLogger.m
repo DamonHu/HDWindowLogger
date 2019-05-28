@@ -21,7 +21,7 @@
 @property (strong, nonatomic) UITableView *mTableView;
 @property (strong, nonatomic) UIButton *mCleanButton;
 @property (strong, nonatomic) UIButton *mHideButton;
-@property (strong, nonatomic) UIButton *mFloatButton;
+@property (strong, nonatomic) UIWindow *mFloatWindow;
 
 @end
 
@@ -68,17 +68,11 @@
     //主视图
     [self.mBGView addSubview:self.mTableView];
     [self.mTableView setFrame:CGRectMake(0, 40, [UIScreen mainScreen].bounds.size.width, 300 - 40)];
-    
-    ///添加悬浮按钮
-    [self.rootViewController.view addSubview:self.mFloatButton];
-    [self.mFloatButton setFrame:CGRectMake([UIScreen mainScreen].bounds.size.width - 70, 10, 60, 60)];
-    
 }
 
 - (void)p_bindClick {
     [self.mHideButton addTarget:self action:@selector(hideLogWindow) forControlEvents:UIControlEventTouchUpInside];
     [self.mCleanButton addTarget:self action:@selector(cleanLog) forControlEvents:UIControlEventTouchUpInside];
-    [self.mFloatButton addTarget:self action:@selector(show) forControlEvents:UIControlEventTouchUpInside];
 }
 
 
@@ -104,7 +98,12 @@
 + (void)printLog:(id)log withLogType:(HDLogType)logType {
     HDWindowLoggerItem *item = [[HDWindowLoggerItem alloc] init];
     item.mLogItemType = logType;
-    item.mLogContent = [NSString stringWithFormat:@"%@",log];
+    item.mCreateDate = [NSDate date];
+    NSDateFormatter *dateFormatter = [[NSDateFormatter alloc] init];
+    [dateFormatter setDateFormat:@"HH:mm:ss.SSS"];
+    NSString *dateStr = [dateFormatter stringFromDate:item.mCreateDate];
+    NSString *contentString = [NSString stringWithFormat:@"%@   >     %@",dateStr,log];
+    item.mLogContent = [NSString stringWithFormat:@"%@",contentString];
     [[self defaultWindowLogger].mLogDataArray addObject:item];
     [[self defaultWindowLogger].mTableView reloadData];
 }
@@ -122,8 +121,9 @@
  */
 + (void)show {
     [self defaultWindowLogger].hidden = NO;
+    [self defaultWindowLogger].userInteractionEnabled = YES;
     [self defaultWindowLogger].mBGView.hidden = NO;
-    [self defaultWindowLogger].mFloatButton.hidden = YES;
+    [self defaultWindowLogger].mFloatWindow.hidden = YES;
 }
 
 
@@ -133,7 +133,7 @@
 + (void)hide {
     [self defaultWindowLogger].hidden = YES;
     [self defaultWindowLogger].mBGView.hidden = YES;
-    [self defaultWindowLogger].mFloatButton.hidden = YES;
+    [self defaultWindowLogger].mFloatWindow.hidden = YES;
 }
 
 
@@ -141,8 +141,9 @@
  只隐藏log的输出窗口，保留悬浮图标
  */
 + (void)hideLogWindow {
+    [self defaultWindowLogger].userInteractionEnabled = NO;
     [self defaultWindowLogger].mBGView.hidden = YES;
-    [self defaultWindowLogger].mFloatButton.hidden = NO;
+    [self defaultWindowLogger].mFloatWindow.hidden = NO;
 }
 
 #pragma mark -
@@ -195,18 +196,25 @@
     return _mHideButton;
 }
 
-- (UIButton *)mFloatButton {
-    if (!_mFloatButton) {
-        _mFloatButton = [UIButton buttonWithType:UIButtonTypeCustom];
-        [_mFloatButton setBackgroundColor:[UIColor colorWithRed:93.0/255.0 green:174.0/255.0 blue:139.0/255.0 alpha:1.0]];
-        [_mFloatButton setTitle:@"H" forState:UIControlStateNormal];
-        [_mFloatButton.titleLabel setFont:[UIFont systemFontOfSize:20]];
-        _mFloatButton.layer.masksToBounds = YES;
-        _mFloatButton.layer.cornerRadius = 30.0f;
-        _mFloatButton.hidden = YES;
+- (UIWindow *)mFloatWindow {
+    if (!_mFloatWindow) {
+        _mFloatWindow = [[UIWindow alloc] initWithFrame:CGRectMake([UIScreen mainScreen].bounds.size.width - 70, 10, 60, 60)];
+        _mFloatWindow.rootViewController = [UIViewController new]; // suppress warning
+        _mFloatWindow.windowLevel = UIWindowLevelAlert;
+        [_mFloatWindow setBackgroundColor:[UIColor clearColor]];
+        _mFloatWindow.userInteractionEnabled = YES;
         
+        UIButton *floatButton = [UIButton buttonWithType:UIButtonTypeCustom];
+        [floatButton setBackgroundColor:[UIColor colorWithRed:93.0/255.0 green:174.0/255.0 blue:139.0/255.0 alpha:1.0]];
+        [floatButton setTitle:@"H" forState:UIControlStateNormal];
+        [floatButton.titleLabel setFont:[UIFont systemFontOfSize:20]];
+        floatButton.layer.masksToBounds = YES;
+        floatButton.layer.cornerRadius = 30.0f;
+        [floatButton addTarget:self action:@selector(show) forControlEvents:UIControlEventTouchUpInside];
+        [_mFloatWindow.rootViewController.view addSubview:floatButton];
+        [floatButton setFrame:CGRectMake(0, 0, 60, 60)];
     }
-    return _mFloatButton;
+    return _mFloatWindow;
 }
 
 
@@ -233,6 +241,7 @@
 #pragma mark - UITableViewDelegate
 - (CGFloat)tableView:(UITableView *)tableView heightForRowAtIndexPath:(NSIndexPath *)indexPath {
     HDWindowLoggerItem *item = [self.mLogDataArray objectAtIndex:indexPath.row];
+
     NSMutableParagraphStyle *style = [[NSParagraphStyle defaultParagraphStyle] mutableCopy];
     style.lineBreakMode = NSLineBreakByWordWrapping;
     style.alignment = NSTextAlignmentLeft;
