@@ -32,7 +32,7 @@
     [self.mContentLabel setText:item.mLogContent];
     switch (item.mLogItemType) {
         case kHDLogTypeNormal: {
-            [self.mContentLabel setTextColor:[UIColor colorWithRed:251.0/255.0 green:242.0/255.0 blue:213.0/255.0 alpha:1.0]];
+            [self.mContentLabel setTextColor:[UIColor colorWithRed:93.0/255.0 green:174.0/255.0 blue:139.0/255.0 alpha:1.0]];
         }
             break;
         case kHDLogTypeWarn: {

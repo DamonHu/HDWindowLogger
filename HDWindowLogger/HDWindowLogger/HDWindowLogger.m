@@ -233,6 +233,11 @@
         cell = [[HDLoggerTableViewCell alloc] initWithStyle:UITableViewCellStyleDefault reuseIdentifier:identifier];
         cell.selectionStyle = UITableViewCellSelectionStyleNone;
     }
+    if (indexPath.row%2 != 0) {
+        cell.backgroundColor = [UIColor colorWithRed:0 green:0 blue:0 alpha:0.3];
+    } else {
+        cell.backgroundColor = [UIColor clearColor];
+    }
     [cell updateWithLoggerItem:item];
     return cell;
 }
