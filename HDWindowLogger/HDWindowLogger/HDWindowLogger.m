@@ -96,11 +96,22 @@
  @param logType 日志类型
  */
 + (void)printLog:(id)log withLogType:(HDLogType)logType {
+    NSDateFormatter *dateFormatter = [[NSDateFormatter alloc] init];
+    [dateFormatter setDateFormat:@"HH:mm:ss.SSS"];
+    
+    if ([self defaultWindowLogger].mLogDataArray.count == 0) {
+        //如果是第一条，就插入一条默认帮助提示
+        HDWindowLoggerItem *item = [[HDWindowLoggerItem alloc] init];
+        item.mLogItemType = kHDLogTypeWarn;
+        item.mCreateDate = [NSDate date];
+        NSString *dateStr = [dateFormatter stringFromDate:item.mCreateDate];
+        NSString *contentString = [NSString stringWithFormat:@"%@   >     %@",dateStr,@"HDWindowLogger: 点击对应日志可快速复制"];
+        item.mLogContent = [NSString stringWithFormat:@"%@",contentString];
+        [[self defaultWindowLogger].mLogDataArray addObject:item];
+    }
     HDWindowLoggerItem *item = [[HDWindowLoggerItem alloc] init];
     item.mLogItemType = logType;
     item.mCreateDate = [NSDate date];
-    NSDateFormatter *dateFormatter = [[NSDateFormatter alloc] init];
-    [dateFormatter setDateFormat:@"HH:mm:ss.SSS"];
     NSString *dateStr = [dateFormatter stringFromDate:item.mCreateDate];
     NSString *contentString = [NSString stringWithFormat:@"%@   >     %@",dateStr,log];
     item.mLogContent = [NSString stringWithFormat:@"%@",contentString];
@@ -270,5 +281,17 @@
 - (nullable UIView *)tableView:(UITableView *)tableView viewForFooterInSection:(NSInteger)section {
     UIView *view = [[UIView alloc] initWithFrame:CGRectZero];
     return view;
+}
+
+- (void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath {
+    HDWindowLoggerItem *item = [self.mLogDataArray objectAtIndex:indexPath.row];
+    UIPasteboard *pasteboard = [UIPasteboard generalPasteboard];
+    pasteboard.string = item.mLogContent;
+    NSDateFormatter *dateFormatter = [[NSDateFormatter alloc] init];
+    [dateFormatter setDateFormat:@"HH:mm:ss.SSS"];
+    NSString *dateStr = [dateFormatter stringFromDate:item.mCreateDate];
+    
+    NSString *tipString = [NSString stringWithFormat:@"已将%@记录复制到剪贴板",dateStr];
+    HDWarnLog(tipString);
 }
 @end
