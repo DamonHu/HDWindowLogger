@@ -26,8 +26,6 @@
 - (void)p_createUI {
     self.backgroundColor = [UIColor clearColor];
     [self.contentView addSubview:self.mContentLabel];
-//    [self.mContentLabel setFrame:self.contentView.bounds];
-    [self.mContentLabel setFrame:CGRectMake(0, 0, [UIScreen mainScreen].bounds.size.width, 0)];
 }
 
 - (void)updateWithLoggerItem:(HDWindowLoggerItem *)item {
@@ -48,7 +46,10 @@
         default:
             break;
     }
-    [self.mContentLabel sizeToFit];
+    
+    
+    CGSize size = [self.mContentLabel sizeThatFits:CGSizeMake([UIScreen mainScreen].bounds.size.width, MAXFLOAT)];
+    [self.mContentLabel setFrame:CGRectMake(0, 0, size.width, ceil(size.height) + 1)];
 }
 
 - (void)awakeFromNib {
