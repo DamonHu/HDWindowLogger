@@ -168,7 +168,7 @@
     [[self defaultWindowLogger].mLogDataArray addObject:item];
     [[self defaultWindowLogger].mTableView reloadData];
     if ([self defaultWindowLogger].mAutoScrollSwitch.isOn) {
-        [[self defaultWindowLogger].mTableView  scrollToRowAtIndexPath:[NSIndexPath indexPathForRow:[self defaultWindowLogger].mLogDataArray.count - 1 inSection:0] atScrollPosition:UITableViewScrollPositionBottom animated:YES];
+        [[self defaultWindowLogger].mTableView  scrollToRowAtIndexPath:[NSIndexPath indexPathForRow:[self defaultWindowLogger].mLogDataArray.count - 1 inSection:0] atScrollPosition:UITableViewScrollPositionBottom animated:NO];
     }
 }
 
