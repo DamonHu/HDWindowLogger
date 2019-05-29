@@ -67,6 +67,14 @@ typedef NS_ENUM(NSUInteger, HDLogType) {
  只隐藏log的输出窗口，保留悬浮图标
  */
 + (void)hideLogWindow;
+
+
+/**
+ 为了节省内存，可以设置记录的最大的log数，超出限制删除最老的数据，默认100条
+
+ @param logCount 0为不限制
+ */
++ (void)setMaxLogCount:(NSInteger)logCount;
 @end
 
 NS_ASSUME_NONNULL_END

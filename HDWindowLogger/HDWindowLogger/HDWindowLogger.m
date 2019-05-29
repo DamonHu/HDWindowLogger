@@ -33,6 +33,7 @@
 @property (strong, nonatomic) UIWindow *mFloatWindow;
 @property (strong, nonatomic) UILabel *mSwitchLabel;
 @property (strong, nonatomic) UISwitch *mAutoScrollSwitch; //输出日志自动滚动
+@property (assign, nonatomic) NSInteger mMaxLogCount;      //最大数
 @end
 
 @implementation HDWindowLogger
@@ -44,6 +45,7 @@
     static dispatch_once_t onceToken;
     dispatch_once(&onceToken, ^{
         defaultLogger = [[HDWindowLogger alloc] init];
+        defaultLogger.mMaxLogCount = 100;
     });
     return defaultLogger;
 }
@@ -166,6 +168,9 @@
     item.mCreateDate = [NSDate date];
     item.mLogContent = log;
     [[self defaultWindowLogger].mLogDataArray addObject:item];
+    if ([self defaultWindowLogger].mMaxLogCount > 0 && [self defaultWindowLogger].mLogDataArray.count > [self defaultWindowLogger].mMaxLogCount) {
+        [[self defaultWindowLogger].mLogDataArray removeObjectAtIndex:0];
+    }
     [[self defaultWindowLogger].mTableView reloadData];
     if ([self defaultWindowLogger].mAutoScrollSwitch.isOn) {
         [[self defaultWindowLogger].mTableView  scrollToRowAtIndexPath:[NSIndexPath indexPathForRow:[self defaultWindowLogger].mLogDataArray.count - 1 inSection:0] atScrollPosition:UITableViewScrollPositionBottom animated:NO];
@@ -208,6 +213,15 @@
     [self defaultWindowLogger].userInteractionEnabled = NO;
     [self defaultWindowLogger].mBGView.hidden = YES;
     [self defaultWindowLogger].mFloatWindow.hidden = NO;
+}
+
+/**
+ 为了节省内存，可以设置记录的最大的log数，超出限制删除最老的数据，默认100条
+ 
+ @param logCount 0为不限制
+ */
++ (void)setMaxLogCount:(NSInteger)logCount {
+    [self defaultWindowLogger].mMaxLogCount = logCount;
 }
 
 #pragma mark -
