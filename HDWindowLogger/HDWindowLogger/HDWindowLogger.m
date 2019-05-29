@@ -367,12 +367,13 @@
 - (void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath {
     HDWindowLoggerItem *item = [self.mLogDataArray objectAtIndex:indexPath.row];
     UIPasteboard *pasteboard = [UIPasteboard generalPasteboard];
-    pasteboard.string = item.mLogContent;
+    pasteboard.string = [item getFullContentString];
+    
     NSDateFormatter *dateFormatter = [[NSDateFormatter alloc] init];
     [dateFormatter setDateFormat:@"HH:mm:ss.SSS"];
     NSString *dateStr = [dateFormatter stringFromDate:item.mCreateDate];
     
-    NSString *tipString = [NSString stringWithFormat:@"已将%@记录复制到剪贴板",dateStr];
+    NSString *tipString = [NSString stringWithFormat:@"%@ Log has been copied",dateStr];
     HDWarnLog(tipString);
 }
 
