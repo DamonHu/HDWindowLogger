@@ -21,8 +21,10 @@
 @property (strong, nonatomic) UITableView *mTableView;
 @property (strong, nonatomic) UIButton *mCleanButton;
 @property (strong, nonatomic) UIButton *mHideButton;
+@property (strong, nonatomic) UIButton *mShareButton;
 @property (strong, nonatomic) UIWindow *mFloatWindow;
-
+@property (strong, nonatomic) UILabel *mSwitchLabel;
+@property (strong, nonatomic) UISwitch *mAutoScrollSwitch; //输出日志自动滚动
 @end
 
 @implementation HDWindowLogger
@@ -61,18 +63,27 @@
     
     //按钮
     [self.mBGView addSubview:self.mHideButton];
-    [self.mHideButton setFrame:CGRectMake(0, 0, [UIScreen mainScreen].bounds.size.width/2.0, 40)];
+    [self.mHideButton setFrame:CGRectMake(0, 0, [UIScreen mainScreen].bounds.size.width/3.0, 40)];
+    [self.mBGView addSubview:self.mShareButton];
+    [self.mShareButton setFrame:CGRectMake([UIScreen mainScreen].bounds.size.width/3.0, 0, [UIScreen mainScreen].bounds.size.width/3.0, 40)];
     [self.mBGView addSubview:self.mCleanButton];
-    [self.mCleanButton setFrame:CGRectMake([UIScreen mainScreen].bounds.size.width/2.0, 0, [UIScreen mainScreen].bounds.size.width/2.0, 40)];
+    [self.mCleanButton setFrame:CGRectMake([UIScreen mainScreen].bounds.size.width*2/3.0, 0, [UIScreen mainScreen].bounds.size.width/3.0, 40)];
     
-    //主视图
+    //滚动日志窗
     [self.mBGView addSubview:self.mTableView];
     [self.mTableView setFrame:CGRectMake(0, 40, [UIScreen mainScreen].bounds.size.width, 300 - 40)];
+    
+    //开关视图
+    [self.mBGView addSubview:self.mAutoScrollSwitch];
+    [self.mAutoScrollSwitch setFrame:CGRectMake([UIScreen mainScreen].bounds.size.width- 60, 40, 60, 40)];
+    [self.mBGView addSubview:self.mSwitchLabel];
+    [self.mSwitchLabel setFrame:CGRectMake([UIScreen mainScreen].bounds.size.width- 155, 40, 90, 30)];
 }
 
 - (void)p_bindClick {
     [self.mHideButton addTarget:self action:@selector(hideLogWindow) forControlEvents:UIControlEventTouchUpInside];
     [self.mCleanButton addTarget:self action:@selector(cleanLog) forControlEvents:UIControlEventTouchUpInside];
+    [self.mShareButton addTarget:self action:@selector(share) forControlEvents:UIControlEventTouchUpInside];
 }
 
 
@@ -83,8 +94,40 @@
 - (void)cleanLog {
     [HDWindowLogger cleanLog];
 }
+
 - (void)show {
     [HDWindowLogger show];
+}
+
+- (void)share {
+    //文件路径
+    NSArray *paths = NSSearchPathForDirectoriesInDomains(NSDocumentDirectory, NSUserDomainMask, YES);
+    NSString *documentDirectory = [paths objectAtIndex:0];
+    NSString *fileName = [NSString stringWithFormat:@"HDWindowLogger.txt"];// 注意不是NSData!
+    NSString *logFilePath = [documentDirectory stringByAppendingPathComponent:fileName];
+    NSMutableArray *mutableArray = [NSMutableArray array];
+    for (HDWindowLoggerItem *item in self.mLogDataArray) {
+        NSString *contentString = item.mLogContent;
+        [mutableArray addObject:contentString];
+    }
+    //写入文件
+    NSData *jsonData = [NSJSONSerialization dataWithJSONObject:mutableArray options:NSJSONWritingPrettyPrinted error:nil];
+    [jsonData writeToFile:logFilePath atomically:YES];
+    
+    //分享
+    NSURL *url = [NSURL fileURLWithPath:logFilePath];
+    
+    
+    UIActivityViewController *activityVC = [[UIActivityViewController alloc] initWithActivityItems:[NSArray arrayWithObjects:url,jsonData, nil] applicationActivities:nil];
+    if ([[UIDevice currentDevice].model isEqualToString:@"iPad"]) {
+        activityVC.modalPresentationStyle = UIModalPresentationPopover;
+        activityVC.popoverPresentationController.sourceView = self.mShareButton;
+        activityVC.popoverPresentationController.sourceRect = self.mShareButton.frame;
+    }
+    activityVC.completionWithItemsHandler = ^(UIActivityType  _Nullable activityType, BOOL completed, NSArray * _Nullable returnedItems, NSError * _Nullable activityError) {
+    };
+
+    [self.rootViewController presentViewController:activityVC animated:true completion:nil];
 }
 #pragma mark -
 #pragma mark - Public Method
@@ -117,6 +160,9 @@
     item.mLogContent = [NSString stringWithFormat:@"%@",contentString];
     [[self defaultWindowLogger].mLogDataArray addObject:item];
     [[self defaultWindowLogger].mTableView reloadData];
+    if ([self defaultWindowLogger].mAutoScrollSwitch.isOn) {
+        [[self defaultWindowLogger].mTableView  scrollToRowAtIndexPath:[NSIndexPath indexPathForRow:[self defaultWindowLogger].mLogDataArray.count - 1 inSection:0] atScrollPosition:UITableViewScrollPositionBottom animated:YES];
+    }
 }
 
 /**
@@ -207,6 +253,16 @@
     return _mHideButton;
 }
 
+- (UIButton *)mShareButton {
+    if (!_mShareButton) {
+        _mShareButton = [UIButton buttonWithType:UIButtonTypeCustom];
+        [_mShareButton setBackgroundColor:[UIColor colorWithRed:246.0/255.0 green:244.0/255.0 blue:157.0/255.0 alpha:1.0]];
+        [_mShareButton setTitle:@"Share" forState:UIControlStateNormal];
+    }
+    return _mShareButton;
+}
+
+
 - (UIWindow *)mFloatWindow {
     if (!_mFloatWindow) {
         _mFloatWindow = [[UIWindow alloc] initWithFrame:CGRectMake([UIScreen mainScreen].bounds.size.width - 70, 10, 60, 60)];
@@ -228,6 +284,24 @@
     return _mFloatWindow;
 }
 
+- (UISwitch *)mAutoScrollSwitch {
+    if (!_mAutoScrollSwitch) {
+        _mAutoScrollSwitch = [[UISwitch alloc] init];
+        _mAutoScrollSwitch.on = YES;
+    }
+    return _mAutoScrollSwitch;
+}
+
+- (UILabel *)mSwitchLabel {
+    if (!_mSwitchLabel) {
+        _mSwitchLabel = [[UILabel alloc] init];
+        _mSwitchLabel.text = @"Auto scroll";
+        _mSwitchLabel.textAlignment = NSTextAlignmentRight;
+        _mSwitchLabel.font = [UIFont systemFontOfSize:13];
+        _mSwitchLabel.textColor = [UIColor whiteColor];
+    }
+    return _mSwitchLabel;
+}
 
 #pragma mark -
 #pragma mark - UITableViewDataSource
@@ -245,7 +319,7 @@
         cell.selectionStyle = UITableViewCellSelectionStyleNone;
     }
     if (indexPath.row%2 != 0) {
-        cell.backgroundColor = [UIColor colorWithRed:0 green:0 blue:0 alpha:0.3];
+        cell.backgroundColor = [UIColor colorWithRed:156.0/255.0 green:44.0/255.0 blue:44.0/255.0 alpha:0.8];
     } else {
         cell.backgroundColor = [UIColor clearColor];
     }
@@ -294,4 +368,5 @@
     NSString *tipString = [NSString stringWithFormat:@"已将%@记录复制到剪贴板",dateStr];
     HDWarnLog(tipString);
 }
+
 @end
