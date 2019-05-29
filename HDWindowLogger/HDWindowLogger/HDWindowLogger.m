@@ -11,6 +11,14 @@
 
 
 @implementation HDWindowLoggerItem
+///获取item的拼接的打印内容
+- (NSString *)getFullContentString {
+    NSDateFormatter *dateFormatter = [[NSDateFormatter alloc] init];
+    [dateFormatter setDateFormat:@"HH:mm:ss.SSS"];
+    NSString *dateStr = [dateFormatter stringFromDate:self.mCreateDate];
+    NSString *contentString = [NSString stringWithFormat:@"%@   >     %@",dateStr,self.mLogContent];
+    return contentString;
+}
 @end
 
 #pragma mark -
@@ -105,10 +113,16 @@
     NSString *documentDirectory = [paths objectAtIndex:0];
     NSString *fileName = [NSString stringWithFormat:@"HDWindowLogger.txt"];// 注意不是NSData!
     NSString *logFilePath = [documentDirectory stringByAppendingPathComponent:fileName];
+    
+    //生成文件需要的内容
+    NSDateFormatter *dateFormatter = [[NSDateFormatter alloc] init];
+    [dateFormatter setDateFormat:@"HH:mm:ss.SSS"];
+    
     NSMutableArray *mutableArray = [NSMutableArray array];
     for (HDWindowLoggerItem *item in self.mLogDataArray) {
-        NSString *contentString = item.mLogContent;
-        [mutableArray addObject:contentString];
+        NSString *dateStr = [dateFormatter stringFromDate:item.mCreateDate];
+        [mutableArray addObject:dateStr];
+        [mutableArray addObject: item.mLogContent];
     }
     //写入文件
     NSData *jsonData = [NSJSONSerialization dataWithJSONObject:mutableArray options:NSJSONWritingPrettyPrinted error:nil];
@@ -139,25 +153,18 @@
  @param logType 日志类型
  */
 + (void)printLog:(id)log withLogType:(HDLogType)logType {
-    NSDateFormatter *dateFormatter = [[NSDateFormatter alloc] init];
-    [dateFormatter setDateFormat:@"HH:mm:ss.SSS"];
-    
     if ([self defaultWindowLogger].mLogDataArray.count == 0) {
         //如果是第一条，就插入一条默认帮助提示
         HDWindowLoggerItem *item = [[HDWindowLoggerItem alloc] init];
         item.mLogItemType = kHDLogTypeWarn;
         item.mCreateDate = [NSDate date];
-        NSString *dateStr = [dateFormatter stringFromDate:item.mCreateDate];
-        NSString *contentString = [NSString stringWithFormat:@"%@   >     %@",dateStr,@"HDWindowLogger: 点击对应日志可快速复制"];
-        item.mLogContent = [NSString stringWithFormat:@"%@",contentString];
+        item.mLogContent = @"HDWindowLogger: 点击对应日志可快速复制";
         [[self defaultWindowLogger].mLogDataArray addObject:item];
     }
     HDWindowLoggerItem *item = [[HDWindowLoggerItem alloc] init];
     item.mLogItemType = logType;
     item.mCreateDate = [NSDate date];
-    NSString *dateStr = [dateFormatter stringFromDate:item.mCreateDate];
-    NSString *contentString = [NSString stringWithFormat:@"%@   >     %@",dateStr,log];
-    item.mLogContent = [NSString stringWithFormat:@"%@",contentString];
+    item.mLogContent = log;
     [[self defaultWindowLogger].mLogDataArray addObject:item];
     [[self defaultWindowLogger].mTableView reloadData];
     if ([self defaultWindowLogger].mAutoScrollSwitch.isOn) {
@@ -334,7 +341,7 @@
     UILabel *label = [[UILabel alloc] init];
     label.numberOfLines = 0;
     label.font = [UIFont systemFontOfSize:13];
-    [label setText:item.mLogContent];
+    [label setText:[item getFullContentString]];
     CGSize size = [label sizeThatFits:CGSizeMake([UIScreen mainScreen].bounds.size.width, MAXFLOAT)];
     return ceil(size.height) + 1;
 }

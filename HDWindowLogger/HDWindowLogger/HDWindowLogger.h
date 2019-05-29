@@ -28,8 +28,10 @@ typedef NS_ENUM(NSUInteger, HDLogType) {
 #pragma mark - 每个打印的item
 @interface HDWindowLoggerItem : NSObject
 @property (assign, nonatomic) HDLogType mLogItemType;
-@property (copy, nonatomic) NSString *mLogContent;
+@property (strong, nonatomic) id mLogContent;
 @property (strong, nonatomic) NSDate *mCreateDate;
+///获取item的拼接的打印内容
+- (NSString *)getFullContentString;
 @end
 
 #pragma mark -
