@@ -160,7 +160,7 @@
         HDWindowLoggerItem *item = [[HDWindowLoggerItem alloc] init];
         item.mLogItemType = kHDLogTypeWarn;
         item.mCreateDate = [NSDate date];
-        item.mLogContent = @"HDWindowLogger: 点击对应日志可快速复制";
+        item.mLogContent = NSLocalizedString(@"HDWindowLogger: 点击对应日志可快速复制", nil);
         [[self defaultWindowLogger].mLogDataArray addObject:item];
     }
     HDWindowLoggerItem *item = [[HDWindowLoggerItem alloc] init];
@@ -224,6 +224,13 @@
     [self defaultWindowLogger].mMaxLogCount = logCount;
 }
 
+- (void)p_touchMove:(UIPanGestureRecognizer*)p {
+    CGPoint panPoint = [p locationInView:[[UIApplication sharedApplication] keyWindow]];
+    if (p.state == UIGestureRecognizerStateChanged) {
+        self.mFloatWindow.center = CGPointMake(panPoint.x, panPoint.y);
+    }
+}
+
 #pragma mark -
 #pragma mark - Lazyload
 - (NSMutableArray *)mLogDataArray {
@@ -260,7 +267,7 @@
     if (!_mCleanButton) {
         _mCleanButton = [UIButton buttonWithType:UIButtonTypeCustom];
         [_mCleanButton setBackgroundColor:[UIColor colorWithRed:255.0/255.0 green:118.0/255.0 blue:118.0/255.0 alpha:1.0]];
-        [_mCleanButton setTitle:@"Clean Log" forState:UIControlStateNormal];
+        [_mCleanButton setTitle:NSLocalizedString(@"清除Log", nil) forState:UIControlStateNormal];
     }
     return _mCleanButton;
 }
@@ -269,7 +276,7 @@
     if (!_mHideButton) {
         _mHideButton = [UIButton buttonWithType:UIButtonTypeCustom];
         [_mHideButton setBackgroundColor:[UIColor colorWithRed:93.0/255.0 green:174.0/255.0 blue:139.0/255.0 alpha:1.0]];
-        [_mHideButton setTitle:@"Hide" forState:UIControlStateNormal];
+        [_mHideButton setTitle:NSLocalizedString(@"隐藏", nil) forState:UIControlStateNormal];
     }
     return _mHideButton;
 }
@@ -278,7 +285,7 @@
     if (!_mShareButton) {
         _mShareButton = [UIButton buttonWithType:UIButtonTypeCustom];
         [_mShareButton setBackgroundColor:[UIColor colorWithRed:246.0/255.0 green:244.0/255.0 blue:157.0/255.0 alpha:1.0]];
-        [_mShareButton setTitle:@"Share" forState:UIControlStateNormal];
+        [_mShareButton setTitle:NSLocalizedString(@"分享", nil) forState:UIControlStateNormal];
     }
     return _mShareButton;
 }
@@ -301,9 +308,13 @@
         [floatButton addTarget:self action:@selector(show) forControlEvents:UIControlEventTouchUpInside];
         [_mFloatWindow.rootViewController.view addSubview:floatButton];
         [floatButton setFrame:CGRectMake(0, 0, 60, 60)];
+        
+        UIPanGestureRecognizer *pan = [[UIPanGestureRecognizer alloc] initWithTarget:self action:@selector(p_touchMove:)];
+        [floatButton addGestureRecognizer:pan];
     }
     return _mFloatWindow;
 }
+
 
 - (UISwitch *)mAutoScrollSwitch {
     if (!_mAutoScrollSwitch) {
@@ -316,7 +327,7 @@
 - (UILabel *)mSwitchLabel {
     if (!_mSwitchLabel) {
         _mSwitchLabel = [[UILabel alloc] init];
-        _mSwitchLabel.text = @"Auto scroll";
+        _mSwitchLabel.text = NSLocalizedString(@"日志自动滚动", nil);
         _mSwitchLabel.textAlignment = NSTextAlignmentRight;
         _mSwitchLabel.font = [UIFont systemFontOfSize:13];
         _mSwitchLabel.textColor = [UIColor whiteColor];
@@ -387,7 +398,7 @@
     [dateFormatter setDateFormat:@"HH:mm:ss.SSS"];
     NSString *dateStr = [dateFormatter stringFromDate:item.mCreateDate];
     
-    NSString *tipString = [NSString stringWithFormat:@"%@ Log has been copied",dateStr];
+    NSString *tipString = [NSString stringWithFormat:@"%@ %@",dateStr,NSLocalizedString(@"日志已拷贝到剪切板", nil)];
     HDWarnLog(tipString);
 }
 
