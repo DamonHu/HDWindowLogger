@@ -8,7 +8,7 @@ s.authors = { 'DamonHu' => 'dong765@qq.com' }
 s.source = { :git => "https://github.com/DamonHu/HDWindowLogger.git", :tag => s.version}
 s.requires_arc = true
 s.ios.deployment_target = '9.0'
-s.source_files = "HDWindowLogger/HDWindowLogger/*.{h,m}"
+s.source_files = "HDWindowLogger/HDWindowLogger/*.{h,m}","HDWindowLogger/HDWindowLogger/**/*.strings"
 s.frameworks = 'UIKit'
 s.documentation_url = 'http://blog.hudongdong.com/ios/952.html'
 end
