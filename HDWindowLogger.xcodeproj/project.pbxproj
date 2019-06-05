@@ -17,6 +17,7 @@
 		E40F7D2C229CE0A800CDB3DB /* HDWindowLoggerUITests.m in Sources */ = {isa = PBXBuildFile; fileRef = E40F7D2B229CE0A800CDB3DB /* HDWindowLoggerUITests.m */; };
 		E40F7D3C229CE0BF00CDB3DB /* HDWindowLogger.m in Sources */ = {isa = PBXBuildFile; fileRef = E40F7D3B229CE0BF00CDB3DB /* HDWindowLogger.m */; };
 		E40F7D3F229CF7C700CDB3DB /* HDLoggerTableViewCell.m in Sources */ = {isa = PBXBuildFile; fileRef = E40F7D3E229CF7C700CDB3DB /* HDLoggerTableViewCell.m */; };
+		E40F7E6522A7C61B00CDB3DB /* Localizable.strings in Resources */ = {isa = PBXBuildFile; fileRef = E40F7E6722A7C61B00CDB3DB /* Localizable.strings */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -57,6 +58,8 @@
 		E40F7D3B229CE0BF00CDB3DB /* HDWindowLogger.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = HDWindowLogger.m; sourceTree = "<group>"; };
 		E40F7D3D229CF7C700CDB3DB /* HDLoggerTableViewCell.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = HDLoggerTableViewCell.h; sourceTree = "<group>"; };
 		E40F7D3E229CF7C700CDB3DB /* HDLoggerTableViewCell.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = HDLoggerTableViewCell.m; sourceTree = "<group>"; };
+		E40F7E6622A7C61B00CDB3DB /* en */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = en; path = en.lproj/Localizable.strings; sourceTree = "<group>"; };
+		E40F7E6822A7C65100CDB3DB /* zh-Hans */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = "zh-Hans"; path = "zh-Hans.lproj/Localizable.strings"; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -146,6 +149,7 @@
 				E40F7D3B229CE0BF00CDB3DB /* HDWindowLogger.m */,
 				E40F7D3D229CF7C700CDB3DB /* HDLoggerTableViewCell.h */,
 				E40F7D3E229CF7C700CDB3DB /* HDLoggerTableViewCell.m */,
+				E40F7E6722A7C61B00CDB3DB /* Localizable.strings */,
 			);
 			path = HDWindowLogger;
 			sourceTree = "<group>";
@@ -235,6 +239,7 @@
 			knownRegions = (
 				en,
 				Base,
+				"zh-Hans",
 			);
 			mainGroup = E40F7CFB229CE0A700CDB3DB;
 			productRefGroup = E40F7D05229CE0A700CDB3DB /* Products */;
@@ -254,6 +259,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				E40F7D14229CE0A800CDB3DB /* LaunchScreen.storyboard in Resources */,
+				E40F7E6522A7C61B00CDB3DB /* Localizable.strings in Resources */,
 				E40F7D11229CE0A800CDB3DB /* Assets.xcassets in Resources */,
 				E40F7D0F229CE0A700CDB3DB /* Main.storyboard in Resources */,
 			);
@@ -336,6 +342,15 @@
 			name = LaunchScreen.storyboard;
 			sourceTree = "<group>";
 		};
+		E40F7E6722A7C61B00CDB3DB /* Localizable.strings */ = {
+			isa = PBXVariantGroup;
+			children = (
+				E40F7E6622A7C61B00CDB3DB /* en */,
+				E40F7E6822A7C65100CDB3DB /* zh-Hans */,
+			);
+			name = Localizable.strings;
+			sourceTree = "<group>";
+		};
 /* End PBXVariantGroup section */
 
 /* Begin XCBuildConfiguration section */
@@ -343,6 +358,7 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ALWAYS_SEARCH_USER_PATHS = NO;
+				CLANG_ANALYZER_LOCALIZABILITY_NONLOCALIZED = YES;
 				CLANG_ANALYZER_NONNULL = YES;
 				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
 				CLANG_CXX_LANGUAGE_STANDARD = "gnu++14";
@@ -402,6 +418,7 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ALWAYS_SEARCH_USER_PATHS = NO;
+				CLANG_ANALYZER_LOCALIZABILITY_NONLOCALIZED = YES;
 				CLANG_ANALYZER_NONNULL = YES;
 				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
 				CLANG_CXX_LANGUAGE_STANDARD = "gnu++14";
