@@ -37,7 +37,7 @@ typedef NS_ENUM(NSUInteger, HDLogType) {
 #pragma mark -
 #pragma mark - 打印的视图
 @interface HDWindowLogger : UIWindow
-
+@property (strong, nonatomic, readonly) NSMutableArray *mLogDataArray;  //log信息内容
 /**
  根据日志的输出类型去输出相应的日志，不同日志类型颜色不一样
 

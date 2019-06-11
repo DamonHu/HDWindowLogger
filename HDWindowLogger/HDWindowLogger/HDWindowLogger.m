@@ -23,8 +23,11 @@
 
 #pragma mark -
 #pragma mark - HDWindowLogger
-@interface HDWindowLogger () <UITableViewDelegate, UITableViewDataSource>
-@property (strong, nonatomic) NSMutableArray *mLogDataArray;
+@interface HDWindowLogger () <UITableViewDelegate, UITableViewDataSource, UISearchBarDelegate>
+@property (strong, nonatomic, readwrite) NSMutableArray *mLogDataArray;  //log信息内容
+@property (strong, nonatomic) NSMutableArray *mFilterLogDataArray;       //展示的筛选的log信息内容
+@property (assign, nonatomic) NSInteger mMaxLogCount;      //最大数
+
 @property (strong, nonatomic) UIView *mBGView;
 @property (strong, nonatomic) UITableView *mTableView;
 @property (strong, nonatomic) UIButton *mCleanButton;
@@ -33,7 +36,7 @@
 @property (strong, nonatomic) UIWindow *mFloatWindow;
 @property (strong, nonatomic) UILabel *mSwitchLabel;
 @property (strong, nonatomic) UISwitch *mAutoScrollSwitch; //输出日志自动滚动
-@property (assign, nonatomic) NSInteger mMaxLogCount;      //最大数
+@property (strong, nonatomic) UISearchBar *mSearchBar;
 @end
 
 @implementation HDWindowLogger
@@ -68,7 +71,7 @@
     self.userInteractionEnabled = YES;
     
     ///添加主视图
-    [self.rootViewController.view  addSubview:self.mBGView];
+    [self.rootViewController.view addSubview:self.mBGView];
     [self.mBGView setFrame:self.bounds];
     
     //按钮
@@ -81,13 +84,16 @@
     
     //滚动日志窗
     [self.mBGView addSubview:self.mTableView];
-    [self.mTableView setFrame:CGRectMake(0, 40, [UIScreen mainScreen].bounds.size.width, 300 - 40)];
+    [self.mTableView setFrame:CGRectMake(0, 40, [UIScreen mainScreen].bounds.size.width, 300 - 80)];
     
     //开关视图
     [self.mBGView addSubview:self.mAutoScrollSwitch];
     [self.mAutoScrollSwitch setFrame:CGRectMake([UIScreen mainScreen].bounds.size.width- 60, 40, 60, 40)];
     [self.mBGView addSubview:self.mSwitchLabel];
     [self.mSwitchLabel setFrame:CGRectMake([UIScreen mainScreen].bounds.size.width- 155, 40, 90, 30)];
+    
+    [self.mBGView addSubview:self.mSearchBar];
+    [self.mSearchBar setFrame:CGRectMake(0, 300 - 40, [UIScreen mainScreen].bounds.size.width, 40)];
 }
 
 - (void)p_bindClick {
@@ -171,10 +177,7 @@
     if ([self defaultWindowLogger].mMaxLogCount > 0 && [self defaultWindowLogger].mLogDataArray.count > [self defaultWindowLogger].mMaxLogCount) {
         [[self defaultWindowLogger].mLogDataArray removeObjectAtIndex:0];
     }
-    [[self defaultWindowLogger].mTableView reloadData];
-    if ([self defaultWindowLogger].mAutoScrollSwitch.isOn) {
-        [[self defaultWindowLogger].mTableView  scrollToRowAtIndexPath:[NSIndexPath indexPathForRow:[self defaultWindowLogger].mLogDataArray.count - 1 inSection:0] atScrollPosition:UITableViewScrollPositionBottom animated:NO];
-    }
+    [[self defaultWindowLogger] reloadFilter];
 }
 
 /**
@@ -182,6 +185,7 @@
  */
 + (void)cleanLog {
     [[self defaultWindowLogger].mLogDataArray removeAllObjects];
+    [[self defaultWindowLogger].mFilterLogDataArray removeAllObjects];
     [[self defaultWindowLogger].mTableView reloadData];
 }
 
@@ -224,10 +228,30 @@
     [self defaultWindowLogger].mMaxLogCount = logCount;
 }
 
+#pragma mark -
+#pragma mark - Private Method
 - (void)p_touchMove:(UIPanGestureRecognizer*)p {
     CGPoint panPoint = [p locationInView:[[UIApplication sharedApplication] keyWindow]];
     if (p.state == UIGestureRecognizerStateChanged) {
         self.mFloatWindow.center = CGPointMake(panPoint.x, panPoint.y);
+    }
+}
+
+///更新筛选数据
+- (void)reloadFilter {
+    [self.mFilterLogDataArray removeAllObjects];
+    for (HDWindowLoggerItem *item in self.mLogDataArray) {
+        if (self.mSearchBar.text.length > 0) {
+            if ([[item getFullContentString] containsString:self.mSearchBar.text]) {
+                [self.mFilterLogDataArray addObject:item];
+            }
+        } else {
+            [self.mFilterLogDataArray addObject:item];
+        }
+        [self.mTableView reloadData];
+        if (self.mFilterLogDataArray.count > 0 && self.mAutoScrollSwitch.isOn) {
+            [self.mTableView  scrollToRowAtIndexPath:[NSIndexPath indexPathForRow:self.mFilterLogDataArray.count - 1 inSection:0] atScrollPosition:UITableViewScrollPositionBottom animated:NO];
+        }
     }
 }
 
@@ -238,6 +262,13 @@
         _mLogDataArray = [NSMutableArray array];
     }
     return _mLogDataArray;
+}
+
+- (NSMutableArray *)mFilterLogDataArray {
+    if (!_mFilterLogDataArray) {
+        _mFilterLogDataArray = [NSMutableArray array];
+    }
+    return _mFilterLogDataArray;
 }
 
 - (UIView *)mBGView {
@@ -285,6 +316,7 @@
     if (!_mShareButton) {
         _mShareButton = [UIButton buttonWithType:UIButtonTypeCustom];
         [_mShareButton setBackgroundColor:[UIColor colorWithRed:246.0/255.0 green:244.0/255.0 blue:157.0/255.0 alpha:1.0]];
+        [_mShareButton setTitleColor:[UIColor colorWithRed:255.0/255.0 green:118.0/255.0 blue:118.0/255.0 alpha:1.0] forState:UIControlStateNormal];
         [_mShareButton setTitle:NSLocalizedString(@"分享", nil) forState:UIControlStateNormal];
     }
     return _mShareButton;
@@ -335,15 +367,27 @@
     return _mSwitchLabel;
 }
 
+- (UISearchBar *)mSearchBar {
+    if (!_mSearchBar) {
+        _mSearchBar = [[UISearchBar alloc] init];
+        [_mSearchBar setPlaceholder:NSLocalizedString(@"内容过滤查找", nil)];
+        [_mSearchBar setBarStyle:UIBarStyleDefault];
+        [_mSearchBar setBackgroundImage:[UIImage new]];
+        [_mSearchBar setBackgroundColor:[UIColor clearColor]];
+        _mSearchBar.delegate = self;
+    }
+    return _mSearchBar;
+}
+
 #pragma mark -
 #pragma mark - UITableViewDataSource
 - (NSInteger)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section {
-    return self.mLogDataArray.count;
+    return self.mFilterLogDataArray.count;
 }
 
 - (UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath {
     static NSString *identifier = @"loggerCellIdentifier";
-    HDWindowLoggerItem *item = [self.mLogDataArray objectAtIndex:indexPath.row];
+    HDWindowLoggerItem *item = [self.mFilterLogDataArray objectAtIndex:indexPath.row];
     
     HDLoggerTableViewCell *cell = [tableView dequeueReusableCellWithIdentifier:identifier];
     if (!cell) {
@@ -362,7 +406,7 @@
 #pragma mark -
 #pragma mark - UITableViewDelegate
 - (CGFloat)tableView:(UITableView *)tableView heightForRowAtIndexPath:(NSIndexPath *)indexPath {
-    HDWindowLoggerItem *item = [self.mLogDataArray objectAtIndex:indexPath.row];
+    HDWindowLoggerItem *item = [self.mFilterLogDataArray objectAtIndex:indexPath.row];
     UILabel *label = [[UILabel alloc] init];
     label.numberOfLines = 0;
     label.font = [UIFont systemFontOfSize:13];
@@ -390,7 +434,7 @@
 }
 
 - (void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath {
-    HDWindowLoggerItem *item = [self.mLogDataArray objectAtIndex:indexPath.row];
+    HDWindowLoggerItem *item = [self.mFilterLogDataArray objectAtIndex:indexPath.row];
     UIPasteboard *pasteboard = [UIPasteboard generalPasteboard];
     pasteboard.string = [item getFullContentString];
     
@@ -402,4 +446,9 @@
     HDWarnLog(tipString);
 }
 
+#pragma mark -
+#pragma mark - UISearchBarDelegate
+- (void)searchBar:(UISearchBar *)searchBar textDidChange:(NSString *)searchText {
+    [self reloadFilter];
+}
 @end
