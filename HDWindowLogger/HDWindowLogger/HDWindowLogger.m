@@ -287,6 +287,7 @@
         _mTableView.delegate = self;
         _mTableView.showsHorizontalScrollIndicator = NO;
         _mTableView.showsVerticalScrollIndicator = YES;
+        _mTableView.keyboardDismissMode = UIScrollViewKeyboardDismissModeInteractive| UIScrollViewKeyboardDismissModeOnDrag;
         _mTableView.backgroundColor = [UIColor clearColor];
         _mTableView.separatorColor = [UIColor colorWithRed:242.0/255.0 green:242.0/255.0 blue:240.0/255.0 alpha:1.0];
         _mTableView.separatorStyle = UITableViewCellSeparatorStyleSingleLine;
@@ -325,7 +326,7 @@
 
 - (UIWindow *)mFloatWindow {
     if (!_mFloatWindow) {
-        _mFloatWindow = [[UIWindow alloc] initWithFrame:CGRectMake([UIScreen mainScreen].bounds.size.width - 70, 10, 60, 60)];
+        _mFloatWindow = [[UIWindow alloc] initWithFrame:CGRectMake([UIScreen mainScreen].bounds.size.width - 70, 50, 60, 60)];
         _mFloatWindow.rootViewController = [UIViewController new]; // suppress warning
         _mFloatWindow.windowLevel = UIWindowLevelAlert;
         [_mFloatWindow setBackgroundColor:[UIColor clearColor]];
@@ -450,5 +451,13 @@
 #pragma mark - UISearchBarDelegate
 - (void)searchBar:(UISearchBar *)searchBar textDidChange:(NSString *)searchText {
     [self reloadFilter];
+}
+
+- (void)searchBarTextDidEndEditing:(UISearchBar *)searchBar {
+    [searchBar resignFirstResponder];
+}
+
+- (void)searchBarSearchButtonClicked:(UISearchBar *)searchBar {
+    [searchBar resignFirstResponder];
 }
 @end
