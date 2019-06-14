@@ -63,95 +63,6 @@
 }
 
 #pragma mark -
-#pragma mark - Private Method
-- (void)p_createUI {
-    self.rootViewController = [UIViewController new]; // suppress warning
-    self.windowLevel = UIWindowLevelAlert;
-    [self setBackgroundColor:[UIColor clearColor]];
-    self.userInteractionEnabled = YES;
-    
-    ///添加主视图
-    [self.rootViewController.view addSubview:self.mBGView];
-    [self.mBGView setFrame:self.bounds];
-    
-    //按钮
-    [self.mBGView addSubview:self.mHideButton];
-    [self.mHideButton setFrame:CGRectMake(0, 0, [UIScreen mainScreen].bounds.size.width/3.0, 40)];
-    [self.mBGView addSubview:self.mShareButton];
-    [self.mShareButton setFrame:CGRectMake([UIScreen mainScreen].bounds.size.width/3.0, 0, [UIScreen mainScreen].bounds.size.width/3.0, 40)];
-    [self.mBGView addSubview:self.mCleanButton];
-    [self.mCleanButton setFrame:CGRectMake([UIScreen mainScreen].bounds.size.width*2/3.0, 0, [UIScreen mainScreen].bounds.size.width/3.0, 40)];
-    
-    //滚动日志窗
-    [self.mBGView addSubview:self.mTableView];
-    [self.mTableView setFrame:CGRectMake(0, 40, [UIScreen mainScreen].bounds.size.width, 300 - 80)];
-    
-    //开关视图
-    [self.mBGView addSubview:self.mAutoScrollSwitch];
-    [self.mAutoScrollSwitch setFrame:CGRectMake([UIScreen mainScreen].bounds.size.width- 60, 40, 60, 40)];
-    [self.mBGView addSubview:self.mSwitchLabel];
-    [self.mSwitchLabel setFrame:CGRectMake([UIScreen mainScreen].bounds.size.width- 155, 40, 90, 30)];
-    
-    [self.mBGView addSubview:self.mSearchBar];
-    [self.mSearchBar setFrame:CGRectMake(0, 300 - 40, [UIScreen mainScreen].bounds.size.width, 40)];
-}
-
-- (void)p_bindClick {
-    [self.mHideButton addTarget:self action:@selector(hideLogWindow) forControlEvents:UIControlEventTouchUpInside];
-    [self.mCleanButton addTarget:self action:@selector(cleanLog) forControlEvents:UIControlEventTouchUpInside];
-    [self.mShareButton addTarget:self action:@selector(share) forControlEvents:UIControlEventTouchUpInside];
-}
-
-
-- (void)hideLogWindow {
-    [HDWindowLogger hideLogWindow];
-}
-
-- (void)cleanLog {
-    [HDWindowLogger cleanLog];
-}
-
-- (void)show {
-    [HDWindowLogger show];
-}
-
-- (void)share {
-    //文件路径
-    NSArray *paths = NSSearchPathForDirectoriesInDomains(NSDocumentDirectory, NSUserDomainMask, YES);
-    NSString *documentDirectory = [paths objectAtIndex:0];
-    NSString *fileName = [NSString stringWithFormat:@"HDWindowLogger.txt"];// 注意不是NSData!
-    NSString *logFilePath = [documentDirectory stringByAppendingPathComponent:fileName];
-    
-    //生成文件需要的内容
-    NSDateFormatter *dateFormatter = [[NSDateFormatter alloc] init];
-    [dateFormatter setDateFormat:@"HH:mm:ss.SSS"];
-    
-    NSMutableArray *mutableArray = [NSMutableArray array];
-    for (HDWindowLoggerItem *item in self.mLogDataArray) {
-        NSString *dateStr = [dateFormatter stringFromDate:item.mCreateDate];
-        [mutableArray addObject:dateStr];
-        [mutableArray addObject: item.mLogContent];
-    }
-    //写入文件
-    NSData *jsonData = [NSJSONSerialization dataWithJSONObject:mutableArray options:NSJSONWritingPrettyPrinted error:nil];
-    [jsonData writeToFile:logFilePath atomically:YES];
-    
-    //分享
-    NSURL *url = [NSURL fileURLWithPath:logFilePath];
-    
-    
-    UIActivityViewController *activityVC = [[UIActivityViewController alloc] initWithActivityItems:[NSArray arrayWithObjects:url,jsonData, nil] applicationActivities:nil];
-    if ([[UIDevice currentDevice].model isEqualToString:@"iPad"]) {
-        activityVC.modalPresentationStyle = UIModalPresentationPopover;
-        activityVC.popoverPresentationController.sourceView = self.mShareButton;
-        activityVC.popoverPresentationController.sourceRect = self.mShareButton.frame;
-    }
-    activityVC.completionWithItemsHandler = ^(UIActivityType  _Nullable activityType, BOOL completed, NSArray * _Nullable returnedItems, NSError * _Nullable activityError) {
-    };
-
-    [self.rootViewController presentViewController:activityVC animated:true completion:nil];
-}
-#pragma mark -
 #pragma mark - Public Method
 
 /**
@@ -177,7 +88,7 @@
     if ([self defaultWindowLogger].mMaxLogCount > 0 && [self defaultWindowLogger].mLogDataArray.count > [self defaultWindowLogger].mMaxLogCount) {
         [[self defaultWindowLogger].mLogDataArray removeObjectAtIndex:0];
     }
-    [[self defaultWindowLogger] reloadFilter];
+    [[self defaultWindowLogger] p_reloadFilter];
 }
 
 /**
@@ -230,6 +141,94 @@
 
 #pragma mark -
 #pragma mark - Private Method
+- (void)p_createUI {
+    self.rootViewController = [UIViewController new]; // suppress warning
+    self.windowLevel = UIWindowLevelAlert;
+    [self setBackgroundColor:[UIColor clearColor]];
+    self.userInteractionEnabled = YES;
+    
+    ///添加主视图
+    [self.rootViewController.view addSubview:self.mBGView];
+    [self.mBGView setFrame:self.bounds];
+    
+    //按钮
+    [self.mBGView addSubview:self.mHideButton];
+    [self.mHideButton setFrame:CGRectMake(0, 0, [UIScreen mainScreen].bounds.size.width/3.0, 40)];
+    [self.mBGView addSubview:self.mShareButton];
+    [self.mShareButton setFrame:CGRectMake([UIScreen mainScreen].bounds.size.width/3.0, 0, [UIScreen mainScreen].bounds.size.width/3.0, 40)];
+    [self.mBGView addSubview:self.mCleanButton];
+    [self.mCleanButton setFrame:CGRectMake([UIScreen mainScreen].bounds.size.width*2/3.0, 0, [UIScreen mainScreen].bounds.size.width/3.0, 40)];
+    
+    //滚动日志窗
+    [self.mBGView addSubview:self.mTableView];
+    [self.mTableView setFrame:CGRectMake(0, 40, [UIScreen mainScreen].bounds.size.width, 300 - 80)];
+    
+    //开关视图
+    [self.mBGView addSubview:self.mAutoScrollSwitch];
+    [self.mAutoScrollSwitch setFrame:CGRectMake([UIScreen mainScreen].bounds.size.width- 60, 40, 60, 40)];
+    [self.mBGView addSubview:self.mSwitchLabel];
+    [self.mSwitchLabel setFrame:CGRectMake([UIScreen mainScreen].bounds.size.width- 155, 40, 90, 30)];
+    
+    [self.mBGView addSubview:self.mSearchBar];
+    [self.mSearchBar setFrame:CGRectMake(0, 300 - 40, [UIScreen mainScreen].bounds.size.width, 40)];
+}
+
+- (void)p_bindClick {
+    [self.mHideButton addTarget:self action:@selector(p_hideLogWindow) forControlEvents:UIControlEventTouchUpInside];
+    [self.mCleanButton addTarget:self action:@selector(p_cleanLog) forControlEvents:UIControlEventTouchUpInside];
+    [self.mShareButton addTarget:self action:@selector(p_share) forControlEvents:UIControlEventTouchUpInside];
+}
+
+
+- (void)p_hideLogWindow {
+    [HDWindowLogger hideLogWindow];
+}
+
+- (void)p_cleanLog {
+    [HDWindowLogger cleanLog];
+}
+
+- (void)p_show {
+    [HDWindowLogger show];
+}
+
+- (void)p_share {
+    //文件路径
+    NSArray *paths = NSSearchPathForDirectoriesInDomains(NSDocumentDirectory, NSUserDomainMask, YES);
+    NSString *documentDirectory = [paths objectAtIndex:0];
+    NSString *fileName = [NSString stringWithFormat:@"HDWindowLogger.txt"];// 注意不是NSData!
+    NSString *logFilePath = [documentDirectory stringByAppendingPathComponent:fileName];
+    
+    //生成文件需要的内容
+    NSDateFormatter *dateFormatter = [[NSDateFormatter alloc] init];
+    [dateFormatter setDateFormat:@"HH:mm:ss.SSS"];
+    
+    NSMutableArray *mutableArray = [NSMutableArray array];
+    for (HDWindowLoggerItem *item in self.mLogDataArray) {
+        NSString *dateStr = [dateFormatter stringFromDate:item.mCreateDate];
+        [mutableArray addObject:dateStr];
+        [mutableArray addObject: item.mLogContent];
+    }
+    //写入文件
+    NSData *jsonData = [NSJSONSerialization dataWithJSONObject:mutableArray options:NSJSONWritingPrettyPrinted error:nil];
+    [jsonData writeToFile:logFilePath atomically:YES];
+    
+    //分享
+    NSURL *url = [NSURL fileURLWithPath:logFilePath];
+    
+    
+    UIActivityViewController *activityVC = [[UIActivityViewController alloc] initWithActivityItems:[NSArray arrayWithObjects:url,jsonData, nil] applicationActivities:nil];
+    if ([[UIDevice currentDevice].model isEqualToString:@"iPad"]) {
+        activityVC.modalPresentationStyle = UIModalPresentationPopover;
+        activityVC.popoverPresentationController.sourceView = self.mShareButton;
+        activityVC.popoverPresentationController.sourceRect = self.mShareButton.frame;
+    }
+    activityVC.completionWithItemsHandler = ^(UIActivityType  _Nullable activityType, BOOL completed, NSArray * _Nullable returnedItems, NSError * _Nullable activityError) {
+    };
+    
+    [[self p_getCurrentVC] presentViewController:activityVC animated:true completion:nil];
+}
+
 - (void)p_touchMove:(UIPanGestureRecognizer*)p {
     CGPoint panPoint = [p locationInView:[[UIApplication sharedApplication] keyWindow]];
     if (p.state == UIGestureRecognizerStateChanged) {
@@ -238,7 +237,7 @@
 }
 
 ///更新筛选数据
-- (void)reloadFilter {
+- (void)p_reloadFilter {
     [self.mFilterLogDataArray removeAllObjects];
     for (HDWindowLoggerItem *item in self.mLogDataArray) {
         if (self.mSearchBar.text.length > 0) {
@@ -253,6 +252,39 @@
             [self.mTableView  scrollToRowAtIndexPath:[NSIndexPath indexPathForRow:self.mFilterLogDataArray.count - 1 inSection:0] atScrollPosition:UITableViewScrollPositionBottom animated:NO];
         }
     }
+}
+
+- (UIViewController *)p_getCurrentVC {
+    UIWindow * window = [[UIApplication sharedApplication] keyWindow];
+    if (window.windowLevel != UIWindowLevelNormal) {
+        NSArray *windows = [[UIApplication sharedApplication] windows];
+        for(UIWindow * tmpWin in windows) {
+            if (tmpWin.windowLevel == UIWindowLevelNormal) {
+                window = tmpWin;
+                break;
+            }
+        }
+    }
+    UIViewController *result = nil;
+    if ([window subviews].count>0) {
+        UIView *frontView = [[window subviews] objectAtIndex:0];
+        id nextResponder = [frontView nextResponder];
+        
+        if ([nextResponder isKindOfClass:[UIViewController class]])
+            result = nextResponder;
+        else
+            result = window.rootViewController;
+    }
+    else{
+        result = window.rootViewController;
+    }
+    if ([result isKindOfClass:[UITabBarController class]]) {
+        result = [((UITabBarController*)result) selectedViewController];
+    }
+    if ([result isKindOfClass:[UINavigationController class]]) {
+        result = [((UINavigationController*)result) visibleViewController];
+    }
+    return result;
 }
 
 #pragma mark -
@@ -338,7 +370,7 @@
         [floatButton.titleLabel setFont:[UIFont systemFontOfSize:20]];
         floatButton.layer.masksToBounds = YES;
         floatButton.layer.cornerRadius = 30.0f;
-        [floatButton addTarget:self action:@selector(show) forControlEvents:UIControlEventTouchUpInside];
+        [floatButton addTarget:self action:@selector(p_show) forControlEvents:UIControlEventTouchUpInside];
         [_mFloatWindow.rootViewController.view addSubview:floatButton];
         [floatButton setFrame:CGRectMake(0, 0, 60, 60)];
         
@@ -450,7 +482,7 @@
 #pragma mark -
 #pragma mark - UISearchBarDelegate
 - (void)searchBar:(UISearchBar *)searchBar textDidChange:(NSString *)searchText {
-    [self reloadFilter];
+    [self p_reloadFilter];
 }
 
 - (void)searchBarTextDidEndEditing:(UISearchBar *)searchBar {
