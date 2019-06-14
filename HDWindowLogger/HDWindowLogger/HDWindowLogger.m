@@ -225,8 +225,8 @@
     }
     activityVC.completionWithItemsHandler = ^(UIActivityType  _Nullable activityType, BOOL completed, NSArray * _Nullable returnedItems, NSError * _Nullable activityError) {
     };
-    
-    [[self p_getCurrentVC] presentViewController:activityVC animated:true completion:nil];
+    [self p_hideLogWindow];
+    [[self p_getCurrentVC] presentViewController:activityVC animated:YES completion:nil];
 }
 
 - (void)p_touchMove:(UIPanGestureRecognizer*)p {
