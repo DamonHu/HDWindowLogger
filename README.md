@@ -2,9 +2,9 @@
 
 ![](./ReadmeImage/cocoapodTool.png)
 
-iOS端将输出日志log悬浮显示在屏幕上，可以生成日志文件分享，便于在真机没有连接xcode的情况下调试信息。
+iOS端将输出日志log悬浮显示在屏幕上，可以生成日志文件分享，便于在真机没有连接xcode的情况下调试信息。可以分享、筛选log等操作
 
-The iOS side displays the output log log on the screen, and can generate log file sharing, which is convenient for debugging information when the real machine is not connected to xcode.
+The iOS side displays the output log log on the screen, and can generate log file sharing, which is convenient for debugging information when the real machine is not connected to xcode. Log information can be filtered and shared
 
 ### [Document for English](#english)
 
@@ -52,6 +52,7 @@ Import header file
 Then feel free to use the following features
 
 ```
+@property (strong, nonatomic, readonly) NSMutableArray *mLogDataArray;  //logData
 /**
  According to the output type of the log, the corresponding log is output, and the different log types are different in color.
 
@@ -149,6 +150,8 @@ pod 'HDWindowLogger'
 然后可以随意使用以下功能
 
 ```
+@property (strong, nonatomic, readonly) NSMutableArray *mLogDataArray;  //log信息内容
+
 /**
  根据日志的输出类型去输出相应的日志，不同日志类型颜色不一样
 
