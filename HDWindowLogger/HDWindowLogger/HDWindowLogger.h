@@ -7,6 +7,7 @@
 //
 
 #import <UIKit/UIKit.h>
+@class HDWindowLoggerItem;
 
 NS_ASSUME_NONNULL_BEGIN
 
@@ -18,24 +19,12 @@ typedef NS_ENUM(NSUInteger, HDLogType) {
 
 #pragma mark -
 #pragma mark - 快捷宏定义输出类型
-
 #define HDNormalLog(log) [HDWindowLogger printLog:log withLogType:kHDLogTypeNormal]     //普通类型的输出
 #define HDWarnLog(log) [HDWindowLogger printLog:log withLogType:kHDLogTypeWarn]         //警告类型的输出
 #define HDErrorLog(log) [HDWindowLogger printLog:log withLogType:kHDLogTypeError]       //错误类型的输出
 
-
 #pragma mark -
-#pragma mark - 每个打印的item
-@interface HDWindowLoggerItem : NSObject
-@property (assign, nonatomic) HDLogType mLogItemType;
-@property (strong, nonatomic) id mLogContent;
-@property (strong, nonatomic) NSDate *mCreateDate;
-///获取item的拼接的打印内容
-- (NSString *)getFullContentString;
-@end
-
-#pragma mark -
-#pragma mark - 打印的视图
+#pragma mark - HDWindowLogger
 @interface HDWindowLogger : UIWindow
 @property (strong, nonatomic, readonly) NSMutableArray *mLogDataArray;  //log信息内容
 /**
@@ -75,6 +64,16 @@ typedef NS_ENUM(NSUInteger, HDLogType) {
  @param logCount 0为不限制
  */
 + (void)setMaxLogCount:(NSInteger)logCount;
+@end
+
+#pragma mark -
+#pragma mark - 每个打印的item
+@interface HDWindowLoggerItem : NSObject
+@property (assign, nonatomic) HDLogType mLogItemType;
+@property (strong, nonatomic) id mLogContent;
+@property (strong, nonatomic) NSDate *mCreateDate;
+///获取item的拼接的打印内容
+- (NSString *)getFullContentString;
 @end
 
 NS_ASSUME_NONNULL_END
