@@ -3,7 +3,7 @@ s.name = 'HDWindowLogger'
 s.version = '1.5.4'
 s.license= { :type => "MIT", :file => "LICENSE" }
 s.summary = 'The iOS side displays the output log log on the screen, and can generate log file sharing, which is convenient for debugging information'
-s.homepage = 'https://github.com/DamonHu/HDNetTools'
+s.homepage = 'https://github.com/DamonHu/HDWindowLogger'
 s.authors = { 'DamonHu' => 'dong765@qq.com' }
 s.source = { :git => "https://github.com/DamonHu/HDWindowLogger.git", :tag => s.version}
 s.requires_arc = true
