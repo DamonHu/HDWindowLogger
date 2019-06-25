@@ -38,8 +38,9 @@
     dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(4.0 * NSEC_PER_SEC)), dispatch_get_main_queue(), ^{
         HDWarnLog(@"nnnnnnnnnnnn");
     });
-    UIButton *button = [[UIButton alloc] initWithFrame:CGRectMake(0, 0, 100, 100)];
+    UIButton *button = [[UIButton alloc] initWithFrame:CGRectMake(0, [UIScreen mainScreen].bounds.size.height - 130, 200, 100)];
     button.backgroundColor = [UIColor redColor];
+    [button setTitle:@"点击添加日志" forState:UIControlStateNormal];
     [button addTarget:self action:@selector(p_click) forControlEvents:UIControlEventTouchUpInside];
     [self.view addSubview:button];
 }
@@ -48,5 +49,9 @@
     HDWarnLog(@"点击按钮");
     NSLog(@"点击了按钮");
     [HDWindowLogger printLog:@"点击按钮" withLogType:kHDLogTypeWarn];
+    NSDictionary *dic = @{@"hhhhhhh":@"撒旦法是打发斯蒂芬是打发斯蒂芬"};
+    [HDWindowLogger printLog:dic withLogType:kHDLogTypeNormal];
+    NSArray *array = @[@"2323232323",@"6666678798778",@"00000000"];
+    [HDWindowLogger printLog:array withLogType:kHDLogTypeNormal];
 }
 @end
