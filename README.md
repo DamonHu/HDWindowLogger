@@ -6,9 +6,10 @@ iOS端将输出日志log悬浮显示在屏幕上，可以生成日志文件分�
 
 The iOS side displays the output log log on the screen, and can generate log file sharing, which is convenient for debugging information when the real machine is not connected to xcode. Log information can be filtered and shared
 
-### [Document for English](#english)
+### [Document for English](#english) | [Swift版本](https://github.com/DamonHu/HDWindowLoggerSwift)
 
-### [中文文档](#chinese)
+### [中文文档](#chinese) | [Swift Version](https://github.com/DamonHu/HDWindowLoggerSwift)
+
 
 <span id = "english"></span>
 
@@ -17,13 +18,11 @@ The iOS side displays the output log log on the screen, and can generate log fil
 
 Project address: [https://github.com/DamonHu/HDWindowLogger] (https://github.com/DamonHu/HDWindowLogger)
 
-I am looking for an iOS and found a similar [HAMLogOutputWindow] (https://github.com/DaiYue/HAMLogOutputWindow). The source code is written by `textview`, but it cannot scroll queries and operations. At the same time, considering that the print network request output is still very large, for performance and subsequent expansion, so I rewrote one with `Tableview`.
-
 Display effect gif:
 
 ![](./ReadmeImage/demo.gif)
 
-In addition to displaying on the screen, you can set whether to automatically scroll the log for debugging, or you can share the output log to WeChat, twitter, etc. for offline viewing.
+In addition to displaying on the screen, you can set whether to automatically scroll the log for debugging, or you can share the output log to WeChat, twitter, etc. for offline viewing. At the same time, you can search for output content, handle it yourself, etc.
 
 ![](./ReadmeImage/2.png)
 
@@ -49,40 +48,46 @@ Import header file
 #import "HDWindowLogger.h"
 ```
 
-Then feel free to use the following features
+### 2.1, then you can use the following functions as you like.
+
+1, display the floating window
 
 ```
-@property (strong, nonatomic, readonly) NSMutableArray *mLogDataArray;  //logData
-/**
- According to the output type of the log, the corresponding log is output, and the different log types are different in color.
-
- @param log log content
- @param logType log type
- */
-+ (void)printLog:(id)log withLogType:(HDLogType)logType;
-
-/**
- Delete log log
- */
-+ (void)cleanLog;
-
-/**
- Display log window
- */
-+ (void)show;
-
-
-/**
- Hide the entire log window
- */
-+ (void)hide;
-
-
-/**
- Hide only the log output window, keep the hover icon
- */
-+ (void)hideLogWindow;
+[HDWindowLogger show];
 ```
+
+2, get the log information content
+
+```
+[HDWindowLogger defaultWindowLogger].mLogDataArray
+```
+3, according to the output type of the log to output the corresponding log, different log types are not the same color
+
+```
+[HDWindowLogger printLog:@"Click the button "withLogType:kHDLogTypeWarn];
+
+///The same effect can be achieved with a simple function.
+HDNormalLog (@"click button")
+```
+
+4, delete the log
+
+```
+[HDWindowLogger cleanLog];
+```
+
+5, hide the entire log window
+
+```
+[HDWindowLogger hide];
+```
+
+6, only hide the log output window
+
+```
+[HDWindowLogger hideLogWindow];
+```
+
 
 For the convenience of output, a three macro definition is encapsulated, corresponding to the different types of printLog.
 
@@ -107,7 +112,7 @@ HDWarnLog(@"click button");
 
 1. For the convenience of viewing, it is divided into three types: normal, warning and error. It corresponds to three different colors for easy viewing.
 2. Click the corresponding cell to copy the output log directly to the system clipboard.
-3. Share the system share you are calling. Which software you can share depends on which files are installed on your phone.
+3. Share the system share that is called. Which software you can share depends on which software is installed on your phone.
 
 <span id = "chinese"></span>
 
@@ -147,41 +152,46 @@ pod 'HDWindowLogger'
 #import "HDWindowLogger.h"
 ```
 
-然后可以随意使用以下功能
+### 2.1、然后可以根据示例随意使用以下功能
+
+1、 显示悬浮窗
 
 ```
-@property (strong, nonatomic, readonly) NSMutableArray *mLogDataArray;  //log信息内容
-
-/**
- 根据日志的输出类型去输出相应的日志，不同日志类型颜色不一样
-
- @param log 日志内容
- @param logType 日志类型
- */
-+ (void)printLog:(id)log withLogType:(HDLogType)logType;
-
-/**
- 删除log日志
- */
-+ (void)cleanLog;
-
-/**
- 显示log窗口
- */
-+ (void)show;
-
-
-/**
- 隐藏整个log窗口
- */
-+ (void)hide;
-
-
-/**
- 只隐藏log的输出窗口，保留悬浮图标
- */
-+ (void)hideLogWindow;
+[HDWindowLogger show];
 ```
+
+2、 获取log信息内容
+
+```
+[HDWindowLogger defaultWindowLogger].mLogDataArray
+```
+3、根据日志的输出类型去输出相应的日志，不同日志类型颜色不一样
+
+```
+[HDWindowLogger printLog:@"点击按钮" withLogType:kHDLogTypeWarn];
+
+///使用简单函数也可以同样的效果
+HDNormalLog(@"点击按钮")
+```
+
+4、删除log
+
+```
+[HDWindowLogger cleanLog];
+```
+
+5、隐藏整个log窗口
+
+```
+[HDWindowLogger hide];
+```
+
+6、仅隐藏log输出窗口
+
+```
+[HDWindowLogger hideLogWindow];
+```
+
 
 为了输出方便，封装了一个三个宏定义，对应的printLog不同的类型
 
