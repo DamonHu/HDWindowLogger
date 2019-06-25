@@ -6,9 +6,9 @@ iOS端将输出日志log悬浮显示在屏幕上，可以生成日志文件分�
 
 The iOS side displays the output log log on the screen, and can generate log file sharing, which is convenient for debugging information when the real machine is not connected to xcode. Log information can be filtered and shared
 
-### [Document for English](#english) | [Swift版本](https://github.com/DamonHu/HDWindowLoggerSwift)
+### [Document for English](#english) | [Swift Version](https://github.com/DamonHu/HDWindowLoggerSwift)
 
-### [中文文档](#chinese) | [Swift Version](https://github.com/DamonHu/HDWindowLoggerSwift)
+### [中文文档](#chinese) | [Swift版本](https://github.com/DamonHu/HDWindowLoggerSwift)
 
 
 <span id = "english"></span>
