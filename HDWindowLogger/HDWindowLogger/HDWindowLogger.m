@@ -54,8 +54,12 @@
 }
 
 - (instancetype)init {
-    self = [super initWithFrame:CGRectMake(0, 0, [UIScreen mainScreen].bounds.size.width, 300)];
+    self = [super initWithFrame:CGRectMake(0, [UIApplication sharedApplication].statusBarFrame.size.height, [UIScreen mainScreen].bounds.size.width, 300)];
     if (self) {
+        self.rootViewController = [UIViewController new]; // suppress warning
+        self.windowLevel = UIWindowLevelAlert;
+        [self setBackgroundColor:[UIColor clearColor]];
+        self.userInteractionEnabled = YES;
         [self p_createUI];
         [self p_bindClick];
     }
@@ -142,11 +146,6 @@
 #pragma mark -
 #pragma mark - Private Method
 - (void)p_createUI {
-    self.rootViewController = [UIViewController new]; // suppress warning
-    self.windowLevel = UIWindowLevelAlert;
-    [self setBackgroundColor:[UIColor clearColor]];
-    self.userInteractionEnabled = YES;
-    
     ///添加主视图
     [self.rootViewController.view addSubview:self.mBGView];
     [self.mBGView setFrame:self.bounds];
@@ -205,6 +204,7 @@
     
     NSMutableArray *mutableArray = [NSMutableArray array];
     for (HDWindowLoggerItem *item in self.mLogDataArray) {
+        //单独写内容是为了文件换行
         NSString *dateStr = [dateFormatter stringFromDate:item.mCreateDate];
         [mutableArray addObject:dateStr];
         [mutableArray addObject: item.mLogContent];
@@ -247,10 +247,10 @@
         } else {
             [self.mFilterLogDataArray addObject:item];
         }
-        [self.mTableView reloadData];
-        if (self.mFilterLogDataArray.count > 0 && self.mAutoScrollSwitch.isOn) {
-            [self.mTableView  scrollToRowAtIndexPath:[NSIndexPath indexPathForRow:self.mFilterLogDataArray.count - 1 inSection:0] atScrollPosition:UITableViewScrollPositionBottom animated:NO];
-        }
+    }
+    [self.mTableView reloadData];
+    if (self.mFilterLogDataArray.count > 0 && self.mAutoScrollSwitch.isOn) {
+        [self.mTableView  scrollToRowAtIndexPath:[NSIndexPath indexPathForRow:self.mFilterLogDataArray.count - 1 inSection:0] atScrollPosition:UITableViewScrollPositionBottom animated:YES];
     }
 }
 
