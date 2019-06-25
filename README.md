@@ -16,7 +16,7 @@ The iOS side displays the output log log on the screen, and can generate log fil
 ## Introduction to English
 
 
-Project address: [https://github.com/DamonHu/HDWindowLogger] (https://github.com/DamonHu/HDWindowLogger)
+Project address: [https://github.com/DamonHu/HDWindowLogger](https://github.com/DamonHu/HDWindowLogger)
 
 Display effect gif:
 
