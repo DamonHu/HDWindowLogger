@@ -88,6 +88,12 @@ HDNormalLog (@"click button")
 [HDWindowLogger hideLogWindow];
 ```
 
+7, set the log maximum number of records, the default 100, 0 is not limited
+
+```
+[HDWindowLogger setMaxLogCount:100];
+```
+
 
 For the convenience of output, a three macro definition is encapsulated, corresponding to the different types of printLog.
 
@@ -192,6 +198,11 @@ HDNormalLog(@"点击按钮")
 [HDWindowLogger hideLogWindow];
 ```
 
+7、设置log最大记录数，默认100条，0为不限制
+
+```
+[HDWindowLogger setMaxLogCount:100];
+```
 
 为了输出方便，封装了一个三个宏定义，对应的printLog不同的类型
 
