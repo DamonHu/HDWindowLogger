@@ -33,7 +33,7 @@ You can choose to install using cocoaPod, or you can download the source file di
 ### 1.1, cocoaPod installation
 
 ```
-Pod 'HDWindowLogger'
+pod 'HDWindowLogger'
 ```
 
 ### 1.2, file installation
