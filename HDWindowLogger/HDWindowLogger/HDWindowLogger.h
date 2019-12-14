@@ -19,14 +19,17 @@ typedef NS_ENUM(NSUInteger, HDLogType) {
 
 #pragma mark -
 #pragma mark - 快捷宏定义输出类型
-#define HDNormalLog(log) [HDWindowLogger printLog:log withLogType:kHDLogTypeNormal]     //普通类型的输出
-#define HDWarnLog(log) [HDWindowLogger printLog:log withLogType:kHDLogTypeWarn]         //警告类型的输出
-#define HDErrorLog(log) [HDWindowLogger printLog:log withLogType:kHDLogTypeError]       //错误类型的输出
+#define HDNormalLog(log) [HDWindowLogger printLog:log withLogType:kHDLogTypeNormal file:[[NSString stringWithUTF8String:__FILE__] lastPathComponent] line:__LINE__ functionName:[NSString stringWithFormat:@"%s",__FUNCTION__]]     //普通类型的输出
+#define HDWarnLog(log) [HDWindowLogger printLog:log withLogType:kHDLogTypeWarn file:[[NSString stringWithUTF8String:__FILE__] lastPathComponent] line:__LINE__ functionName:[NSString stringWithFormat:@"%s",__FUNCTION__]]         //警告类型的输出
+#define HDErrorLog(log) [HDWindowLogger printLog:log withLogType:kHDLogTypeError file:[[NSString stringWithUTF8String:__FILE__] lastPathComponent] line:__LINE__ functionName:[NSString stringWithFormat:@"%s",__FUNCTION__]]       //错误类型的输出
 
 #pragma mark -
 #pragma mark - HDWindowLogger
 @interface HDWindowLogger : UIWindow
 @property (strong, nonatomic, readonly) NSMutableArray *mLogDataArray;  //log信息内容
+@property (assign, nonatomic) BOOL mCompleteLogOut;           //是否完整输出日志文件名等调试内容
+@property (assign, nonatomic) BOOL mDebugAreaLogOut;           //是否在xcode底部的调试栏同步输出内容
+
 + (HDWindowLogger *)defaultWindowLogger;
 
 /**
@@ -35,7 +38,16 @@ typedef NS_ENUM(NSUInteger, HDLogType) {
  @param log 日志内容
  @param logType 日志类型
  */
-+ (void)printLog:(id)log withLogType:(HDLogType)logType;
++ (void)printLog:(id)log withLogType:(HDLogType)logType DEPRECATED_MSG_ATTRIBUTE("请使用HDNormalLog等快捷宏定义输入");
+
+
+///  根据日志的输出类型去输出相应的日志，不同日志类型颜色不一样
+/// @param log 日志内容
+/// @param logType 日志类型
+/// @param fileName 调用输出的文件
+/// @param line 调用输出的行数
+/// @param funcationName 调用输出的函数名
++ (void)printLog:(id)log withLogType:(HDLogType)logType file:(NSString *)fileName line:(NSInteger)line functionName:(NSString *)funcationName;
 
 /**
  删除log日志

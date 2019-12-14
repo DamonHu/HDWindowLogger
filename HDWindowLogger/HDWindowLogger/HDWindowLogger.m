@@ -49,19 +49,30 @@
     dispatch_once(&onceToken, ^{
         defaultLogger = [[HDWindowLogger alloc] init];
         defaultLogger.mMaxLogCount = 100;
+        defaultLogger.mCompleteLogOut = false;
+        defaultLogger.mDebugAreaLogOut = true;
     });
     return defaultLogger;
 }
 
 - (instancetype)init {
-    self = [super initWithFrame:CGRectMake(0, [UIApplication sharedApplication].statusBarFrame.size.height, [UIScreen mainScreen].bounds.size.width, 300)];
+    self = [super init];
     if (self) {
         self.rootViewController = [UIViewController new]; // suppress warning
-        self.windowLevel = UIWindowLevelAlert;
+        self.windowLevel = UIWindowLevelStatusBar;
         [self setBackgroundColor:[UIColor clearColor]];
         self.userInteractionEnabled = YES;
         [self p_createUI];
         [self p_bindClick];
+        dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(0.1 * NSEC_PER_SEC)), dispatch_get_main_queue(), ^{
+            float statusBarHeight = 0;
+            if (@available(iOS 13.0, *)) {
+                statusBarHeight = self.windowScene.statusBarManager.statusBarFrame.size.height;
+            } else {
+                statusBarHeight = [UIApplication sharedApplication].statusBarFrame.size.height;
+            }
+            [self setFrame:CGRectMake(0, statusBarHeight, [UIScreen mainScreen].bounds.size.width, 300)];
+        });
     }
     return self;
 }
@@ -76,6 +87,16 @@
  @param logType 日志类型
  */
 + (void)printLog:(id)log withLogType:(HDLogType)logType {
+    [self printLog:log withLogType:logType file:[[NSString stringWithUTF8String:__FILE__] lastPathComponent] line:__LINE__ functionName:[NSString stringWithFormat:@"%s",__FUNCTION__]];
+}
+
+///  根据日志的输出类型去输出相应的日志，不同日志类型颜色不一样
+/// @param log 日志内容
+/// @param logType 日志类型
+/// @param fileName 调用输出的文件
+/// @param line 调用输出的行数
+/// @param funcationName 调用输出的函数名
++ (void)printLog:(id)log withLogType:(HDLogType)logType file:(NSString *)fileName line:(NSInteger)line functionName:(NSString *)funcationName {
     if ([self defaultWindowLogger].mLogDataArray.count == 0) {
         //如果是第一条，就插入一条默认帮助提示
         HDWindowLoggerItem *item = [[HDWindowLoggerItem alloc] init];
@@ -87,7 +108,15 @@
     HDWindowLoggerItem *item = [[HDWindowLoggerItem alloc] init];
     item.mLogItemType = logType;
     item.mCreateDate = [NSDate date];
-    item.mLogContent = log;
+    if ([self defaultWindowLogger].mCompleteLogOut) {
+        item.mLogContent = [NSString stringWithFormat:@"[File:\(%@)]:[Line:\(%ld):[Function:\(%@)]]-Log:\n%@",fileName,(long)line,funcationName,log];
+    } else {
+        item.mLogContent = log;
+    }
+    if ([self defaultWindowLogger].mDebugAreaLogOut) {
+        NSLog(@"%@",item.mLogContent);
+    }
+    
     [[self defaultWindowLogger].mLogDataArray addObject:item];
     if ([self defaultWindowLogger].mMaxLogCount > 0 && [self defaultWindowLogger].mLogDataArray.count > [self defaultWindowLogger].mMaxLogCount) {
         [[self defaultWindowLogger].mLogDataArray removeObjectAtIndex:0];
