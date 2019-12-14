@@ -42,76 +42,84 @@ You can drag the files in the `HDWindowLogger` folder to the project under the p
 
 ## II. Use
 
-Import header file
+### 1、Import header file
 
 ```
 #import "HDWindowLogger.h"
 ```
 
-### 2.1, then you can use the following functions as you like.
-
-1, display the floating window
+### 2、 display the floating window
 
 ```
 [HDWindowLogger show];
 ```
 
-2, get the log information content
+### 3 、 Print log content
+
+The font colors of the three output methods are different, and the corresponding types of printLog are different.
+
+```
+HDNormalLog(@"点击按钮"); 	//Log's textColor is green
+HDWarnLog(@"点击按钮");		//log's textColor is yellow
+HDErrorLog(@"点击按钮");		//Log's textColor is red
+```
+
+Output format
+
+```
+13:45:00.153  >   点击按钮
+```
+
+## III. more settings
+
+### 1、Set whether to output all information
+
+
+```
+[HDWindowLogger defaultWindowLogger].mCompleteLogOut = true;
+```
+
+If set to output all debugging information, the output format is as follows, including the output file, the number of lines called, and the function called
+
+```
+10:00:07.268   >     [File:(ViewController.m)]:[Line:(49):[Function:(-[ViewController p_click])]]-Log:
+点击按钮
+```
+
+### 2、 Whether to output content synchronously in the debug bar at the bottom of xcode
+
+```
+[HDWindowLogger defaultWindowLogger].mDebugAreaLogOut = true
+```
+
+### 3、Get the log information content
 
 ```
 [HDWindowLogger defaultWindowLogger].mLogDataArray
 ```
-3, according to the output type of the log to output the corresponding log, different log types are not the same color
 
-```
-[HDWindowLogger printLog:@"Click the button "withLogType:kHDLogTypeWarn];
-
-///The same effect can be achieved with a simple function.
-HDNormalLog (@"click button")
-```
-
-4, delete the log
+### 4、Clear the log
 
 ```
 [HDWindowLogger cleanLog];
 ```
 
-5, hide the entire log window
+### 5, hide the entire log window
 
 ```
 [HDWindowLogger hide];
 ```
 
-6, only hide the log output window
+### 6, only hide the log output window
 
 ```
 [HDWindowLogger hideLogWindow];
 ```
 
-7, set the log maximum number of records, the default 100, 0 is not limited
+### 7, set the log maximum number of records, the default 100, 0 is not limited
 
 ```
 [HDWindowLogger setMaxLogCount:100];
-```
-
-
-For the convenience of output, a three macro definition is encapsulated, corresponding to the different types of printLog.
-
-```
-HDNormalLog(log)
-
-HDWarnLog(log)
-
-HDErrorLog(log)
-```
-
-### 2.1, use example
-
-The following two ways of using the output log are equivalent.
-
-```
-HDWarnLog(@"click button");
-[HDWindowLogger printLog:@"Click the button "withLogType:kHDLogTypeWarn];
 ```
 
 ## III. Other instructions
@@ -152,76 +160,90 @@ pod 'HDWindowLogger'
 
 ## 二、使用
 
-导入头文件
+简单三步即可调用显示
+
+### 1、导入头文件
 
 ```
 #import "HDWindowLogger.h"
 ```
 
-### 2.1、然后可以根据示例随意使用以下功能
+### 2、显示悬浮窗
 
-1、 显示悬浮窗
 
 ```
 [HDWindowLogger show];
 ```
 
-2、 获取log信息内容
+### 3、 打印日志内容
+
+三种输出方式字体颜色显示不同，对应的printLog不同的类型
+
+```
+HDNormalLog(@"点击按钮"); 	//日志为绿色
+HDWarnLog(@"点击按钮");		//日志为黄色
+HDErrorLog(@"点击按钮");		//日志为红色
+```
+
+输出格式
+
+```
+13:45:00.153  >   点击按钮
+```
+
+## 三、更多设置
+
+通过其他设置可以实现获取更多功能
+
+### 1、设置是否输出全部信息
+
+```
+[HDWindowLogger defaultWindowLogger].mCompleteLogOut = true;
+```
+
+如果设置为输出全部调试信息，那么输出的格式是下面这样的，包含了输出文件、调用的行数、和调用的函数
+
+```
+10:00:07.268   >     [File:(ViewController.m)]:[Line:(49):[Function:(-[ViewController p_click])]]-Log:
+点击按钮
+```
+
+### 2、是否在xcode底部的调试栏同步输出内容
+
+```
+[HDWindowLogger defaultWindowLogger].mDebugAreaLogOut = true
+```
+
+### 3、 获取log信息内容
 
 ```
 [HDWindowLogger defaultWindowLogger].mLogDataArray
 ```
-3、根据日志的输出类型去输出相应的日志，不同日志类型颜色不一样
 
-```
-[HDWindowLogger printLog:@"点击按钮" withLogType:kHDLogTypeWarn];
-
-///使用简单函数也可以同样的效果
-HDNormalLog(@"点击按钮")
-```
-
-4、删除log
+### 4、清空log
 
 ```
 [HDWindowLogger cleanLog];
 ```
 
-5、隐藏整个log窗口
+### 5、隐藏整个log窗口
 
 ```
 [HDWindowLogger hide];
 ```
 
-6、仅隐藏log输出窗口
+### 6、仅隐藏log输出窗口
 
 ```
 [HDWindowLogger hideLogWindow];
 ```
 
-7、设置log最大记录数，默认100条，0为不限制
+### 7、设置log最大记录数，默认100条，0为不限制
 
 ```
 [HDWindowLogger setMaxLogCount:100];
 ```
 
-为了输出方便，封装了一个三个宏定义，对应的printLog不同的类型
-
-```
-HDNormalLog(log)
-
-HDWarnLog(log)
-
-HDErrorLog(log)
-```
-
-### 2.1、使用示例
-
-输出日志下面两种使用方式是等效的
-
-```
-HDWarnLog(@"点击按钮");
-[HDWindowLogger printLog:@"点击按钮" withLogType:kHDLogTypeWarn];
-```
 
 ## 三、其他说明
 
