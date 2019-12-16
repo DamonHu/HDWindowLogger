@@ -58,12 +58,6 @@
 - (instancetype)init {
     self = [super init];
     if (self) {
-        self.rootViewController = [UIViewController new]; // suppress warning
-        self.windowLevel = UIWindowLevelStatusBar;
-        [self setBackgroundColor:[UIColor clearColor]];
-        self.userInteractionEnabled = YES;
-        [self p_createUI];
-        [self p_bindClick];
         dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(0.1 * NSEC_PER_SEC)), dispatch_get_main_queue(), ^{
             float statusBarHeight = 0;
             if (@available(iOS 13.0, *)) {
@@ -71,7 +65,13 @@
             } else {
                 statusBarHeight = [UIApplication sharedApplication].statusBarFrame.size.height;
             }
-            [self setFrame:CGRectMake(0, statusBarHeight, [UIScreen mainScreen].bounds.size.width, 300)];
+            [self setFrame:CGRectMake(0, statusBarHeight, [UIScreen mainScreen].bounds.size.width, 302)];
+            self.rootViewController = [UIViewController new]; // suppress warning
+            self.windowLevel = UIWindowLevelStatusBar;
+            [self setBackgroundColor:[UIColor clearColor]];
+            self.userInteractionEnabled = YES;
+            [self p_createUI];
+            [self p_bindClick];
         });
     }
     return self;
@@ -435,7 +435,7 @@
         [_mSearchBar setPlaceholder:NSLocalizedString(@"内容过滤查找", nil)];
         [_mSearchBar setBarStyle:UIBarStyleDefault];
         [_mSearchBar setBackgroundImage:[UIImage new]];
-        [_mSearchBar setBackgroundColor:[UIColor clearColor]];
+        [_mSearchBar setBackgroundColor:[UIColor whiteColor]];
         _mSearchBar.delegate = self;
     }
     return _mSearchBar;
