@@ -73,7 +73,7 @@ typedef NS_ENUM(NSUInteger, HDLogType) {
 
 
 /**
- 为了节省内存，可以设置记录的最大的log数，超出限制删除最老的数据，默认100条
+ 为了节省内存，可以设置记录的最大的log数，超出限制删除最老的数据，默认不限制
 
  @param logCount 0为不限制
  */

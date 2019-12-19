@@ -116,7 +116,7 @@ If set to output all debugging information, the output format is as follows, inc
 [HDWindowLogger hideLogWindow];
 ```
 
-### 7, set the log maximum number of records, the default 100, 0 is not limited
+### 7, set the log maximum number of records, 0 is not limited，default value is 0
 
 ```
 [HDWindowLogger setMaxLogCount:100];
@@ -238,7 +238,7 @@ HDErrorLog(@"点击按钮");		//日志为红色
 [HDWindowLogger hideLogWindow];
 ```
 
-### 7、设置log最大记录数，默认100条，0为不限制
+### 7、设置log最大记录数，0为不限制，默认不限制
 
 ```
 [HDWindowLogger setMaxLogCount:100];

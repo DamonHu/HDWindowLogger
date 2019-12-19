@@ -48,7 +48,7 @@
     static dispatch_once_t onceToken;
     dispatch_once(&onceToken, ^{
         defaultLogger = [[HDWindowLogger alloc] init];
-        defaultLogger.mMaxLogCount = 100;
+        defaultLogger.mMaxLogCount = 0;
         defaultLogger.mCompleteLogOut = false;
         defaultLogger.mDebugAreaLogOut = true;
     });
@@ -164,7 +164,7 @@
 }
 
 /**
- 为了节省内存，可以设置记录的最大的log数，超出限制删除最老的数据，默认100条
+ 为了节省内存，可以设置记录的最大的log数，超出限制删除最老的数据，默认不限制
  
  @param logCount 0为不限制
  */
@@ -268,7 +268,8 @@
 ///更新筛选数据
 - (void)p_reloadFilter {
     [self.mFilterLogDataArray removeAllObjects];
-    for (HDWindowLoggerItem *item in self.mLogDataArray) {
+    NSArray *copyArray = [NSArray arrayWithArray:self.mLogDataArray];
+    for (HDWindowLoggerItem *item in copyArray) {
         if (self.mSearchBar.text.length > 0) {
             if ([[item getFullContentString] containsString:self.mSearchBar.text]) {
                 [self.mFilterLogDataArray addObject:item];
