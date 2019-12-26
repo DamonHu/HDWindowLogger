@@ -20,11 +20,11 @@ Project address: [https://github.com/DamonHu/HDWindowLogger](https://github.com/
 
 Display effect gif:
 
-![](./ReadmeImage/demo.gif)
+![](./ReadmeImage/preview.gif)
 
-In addition to displaying on the screen, you can set whether to automatically scroll the log for debugging, or you can share the output log to WeChat, twitter, etc. for offline viewing. At the same time, you can search for output content, handle it yourself, etc.
+In addition to displaying on the screen, you can set whether to automatically scroll the log for debugging, or you can share the output log to WeChat, twitter, etc. for offline viewing. At the same time, you can search for output content, Sensitive content can be encrypted with a password, and shared files are also encrypted, and can be decrypted online with a password.
 
-![](./ReadmeImage/2.png)
+![](./ReadmeImage/preview.png)
 
 ## I. Installation
 
@@ -178,11 +178,11 @@ Here are a few online sites recommended, you can also Google it by yourself
 
 展示效果gif图:
 
-![](./ReadmeImage/demo.gif)
+![](./ReadmeImage/preview.gif)
 
-除了在屏幕上显示，可以设置是否自动滚动日志便于调试，也可以将输出的日志分享到微信、twitter等程序，以便离线查看。同时可以搜索输出内容，自己处理等
+除了在屏幕上显示，可以设置是否自动滚动日志便于调试，也可以将输出的日志分享到微信、twitter等程序，以便离线查看。同时可以搜索输出内容，敏感内容可以设置密码进行加密，分享出来的文件也会进行加密，可以通过密码在线解密
 
-![](./ReadmeImage/2.png)
+![](./ReadmeImage/preview.png)
 
 ## 一、安装
 
