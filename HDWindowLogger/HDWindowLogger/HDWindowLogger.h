@@ -12,9 +12,10 @@
 NS_ASSUME_NONNULL_BEGIN
 
 typedef NS_ENUM(NSUInteger, HDLogType) {
-    kHDLogTypeNormal = 0,   //textColor #fbf2d5
+    kHDLogTypeNormal = 0,   //textColor #50d890
     kHDLogTypeWarn,         //textColor #f6f49d
     kHDLogTypeError,        //textColor #ff7676
+    kHDLogTypePrivacy       //textColor #42e6a4
 };
 
 #pragma mark -
@@ -22,13 +23,16 @@ typedef NS_ENUM(NSUInteger, HDLogType) {
 #define HDNormalLog(log) [HDWindowLogger printLog:log withLogType:kHDLogTypeNormal file:[[NSString stringWithUTF8String:__FILE__] lastPathComponent] line:__LINE__ functionName:[NSString stringWithFormat:@"%s",__FUNCTION__]]     //普通类型的输出
 #define HDWarnLog(log) [HDWindowLogger printLog:log withLogType:kHDLogTypeWarn file:[[NSString stringWithUTF8String:__FILE__] lastPathComponent] line:__LINE__ functionName:[NSString stringWithFormat:@"%s",__FUNCTION__]]         //警告类型的输出
 #define HDErrorLog(log) [HDWindowLogger printLog:log withLogType:kHDLogTypeError file:[[NSString stringWithUTF8String:__FILE__] lastPathComponent] line:__LINE__ functionName:[NSString stringWithFormat:@"%s",__FUNCTION__]]       //错误类型的输出
+#define HDPrivacyLog(log) [HDWindowLogger printLog:log withLogType:kHDLogTypePrivacy file:[[NSString stringWithUTF8String:__FILE__] lastPathComponent] line:__LINE__ functionName:[NSString stringWithFormat:@"%s",__FUNCTION__]]       //保密类型的输出
 
 #pragma mark -
 #pragma mark - HDWindowLogger
 @interface HDWindowLogger : UIWindow
 @property (strong, nonatomic, readonly) NSMutableArray *mLogDataArray;  //log信息内容
-@property (assign, nonatomic) BOOL mCompleteLogOut;           //是否完整输出日志文件名等调试内容
-@property (assign, nonatomic) BOOL mDebugAreaLogOut;           //是否在xcode底部的调试栏同步输出内容
+@property (assign, nonatomic) BOOL mCompleteLogOut;             //是否完整输出日志文件名等调试内容
+@property (assign, nonatomic) BOOL mDebugAreaLogOut;            //是否在xcode底部的调试栏同步输出内容
+@property (copy, nonatomic) NSString *mPrivacyPassword;         //解密隐私数据的密码，默认为空
+@property (assign, nonatomic, readonly) BOOL mPasswordCorrect;
 
 + (HDWindowLogger *)defaultWindowLogger;
 
@@ -85,7 +89,9 @@ typedef NS_ENUM(NSUInteger, HDLogType) {
 @interface HDWindowLoggerItem : NSObject
 @property (assign, nonatomic) HDLogType mLogItemType;
 @property (strong, nonatomic) id mLogContent;
+@property (copy, nonatomic) NSString *mLogDebugContent;
 @property (strong, nonatomic) NSDate *mCreateDate;
+
 ///获取item的拼接的打印内容
 - (NSString *)getFullContentString;
 @end

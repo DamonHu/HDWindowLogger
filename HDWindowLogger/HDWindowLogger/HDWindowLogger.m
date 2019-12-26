@@ -8,7 +8,7 @@
 
 #import "HDWindowLogger.h"
 #import "HDLoggerTableViewCell.h"
-
+#import <CommonCrypto/CommonCryptor.h>
 
 @implementation HDWindowLoggerItem
 ///获取item的拼接的打印内容
@@ -16,14 +16,30 @@
     NSDateFormatter *dateFormatter = [[NSDateFormatter alloc] init];
     [dateFormatter setDateFormat:@"HH:mm:ss.SSS"];
     NSString *dateStr = [dateFormatter stringFromDate:self.mCreateDate];
-    NSString *contentString = [NSString stringWithFormat:@"%@   >     %@",dateStr,self.mLogContent];
-    return contentString;
+    //内容
+    NSString *contentString = @"";
+    if (self.mLogItemType == kHDLogTypePrivacy) {
+        contentString = [NSString stringWithFormat:@"%@",self.mLogContent];
+        if (!HDWindowLogger.defaultWindowLogger.mPasswordCorrect) {
+            contentString = NSLocalizedString(@"该内容已加密，请解密后查看", comment: @"");
+        }
+        if (HDWindowLogger.defaultWindowLogger.mPrivacyPassword.length > 0 && HDWindowLogger.defaultWindowLogger.mPrivacyPassword.length != kCCKeySizeAES256) {
+            contentString = NSLocalizedString(@"密码设置长度错误，需要32个字符", comment: @"");
+        }
+    } else {
+        contentString = [NSString stringWithFormat:@"%@",self.mLogContent];
+    }
+    if (HDWindowLogger.defaultWindowLogger.mCompleteLogOut) {
+        return [NSString stringWithFormat:@"%@   >     %@\n%@",dateStr, self.mLogDebugContent, contentString];
+    } else {
+        return [NSString stringWithFormat:@"%@   >     %@",dateStr,contentString];
+    }
 }
 @end
 
 #pragma mark -
 #pragma mark - HDWindowLogger
-@interface HDWindowLogger () <UITableViewDelegate, UITableViewDataSource, UISearchBarDelegate>
+@interface HDWindowLogger () <UITableViewDelegate, UITableViewDataSource, UISearchBarDelegate, UITextFieldDelegate>
 @property (strong, nonatomic, readwrite) NSMutableArray *mLogDataArray;  //log信息内容
 @property (strong, nonatomic) NSMutableArray *mFilterLogDataArray;       //展示的筛选的log信息内容
 @property (assign, nonatomic) NSInteger mMaxLogCount;      //最大数
@@ -31,6 +47,8 @@
 @property (strong, nonatomic) UIView *mBGView;
 @property (strong, nonatomic) UITableView *mTableView;
 @property (strong, nonatomic) UIButton *mCleanButton;
+@property (strong, nonatomic) UITextField *mPasswordTextField;
+@property (strong, nonatomic) UIButton *mPasswordButton;
 @property (strong, nonatomic) UIButton *mHideButton;
 @property (strong, nonatomic) UIButton *mShareButton;
 @property (strong, nonatomic) UIWindow *mFloatWindow;
@@ -49,8 +67,9 @@
     dispatch_once(&onceToken, ^{
         defaultLogger = [[HDWindowLogger alloc] init];
         defaultLogger.mMaxLogCount = 0;
-        defaultLogger.mCompleteLogOut = false;
+        defaultLogger.mCompleteLogOut = true;
         defaultLogger.mDebugAreaLogOut = true;
+        defaultLogger.mPrivacyPassword = @"";
     });
     return defaultLogger;
 }
@@ -65,7 +84,7 @@
             } else {
                 statusBarHeight = [UIApplication sharedApplication].statusBarFrame.size.height;
             }
-            [self setFrame:CGRectMake(0, statusBarHeight, [UIScreen mainScreen].bounds.size.width, 302)];
+            [self setFrame:CGRectMake(0, statusBarHeight, [UIScreen mainScreen].bounds.size.width, 342)];
             self.rootViewController = [UIViewController new]; // suppress warning
             self.windowLevel = UIWindowLevelStatusBar;
             [self setBackgroundColor:[UIColor clearColor]];
@@ -75,6 +94,10 @@
         });
     }
     return self;
+}
+
+- (BOOL)mPasswordCorrect {
+    return [self.mPasswordTextField.text isEqualToString:self.mPrivacyPassword];
 }
 
 #pragma mark -
@@ -102,19 +125,17 @@
         HDWindowLoggerItem *item = [[HDWindowLoggerItem alloc] init];
         item.mLogItemType = kHDLogTypeWarn;
         item.mCreateDate = [NSDate date];
+        item.mLogDebugContent = @"";
         item.mLogContent = NSLocalizedString(@"HDWindowLogger: 点击对应日志可快速复制", nil);
         [[self defaultWindowLogger].mLogDataArray addObject:item];
     }
     HDWindowLoggerItem *item = [[HDWindowLoggerItem alloc] init];
     item.mLogItemType = logType;
     item.mCreateDate = [NSDate date];
-    if ([self defaultWindowLogger].mCompleteLogOut) {
-        item.mLogContent = [NSString stringWithFormat:@"[File:\(%@)]:[Line:\(%ld):[Function:\(%@)]]-Log:\n%@",fileName,(long)line,funcationName,log];
-    } else {
-        item.mLogContent = log;
-    }
+    item.mLogDebugContent = [NSString stringWithFormat:@"[File:\(%@)]:[Line:\(%ld):[Function:\(%@)]]-Log:",fileName,(long)line,funcationName];
+    item.mLogContent = log;
     if ([self defaultWindowLogger].mDebugAreaLogOut) {
-        NSLog(@"%@",item.mLogContent);
+        NSLog(@"%@",[item getFullContentString]);
     }
     
     [[self defaultWindowLogger].mLogDataArray addObject:item];
@@ -186,25 +207,30 @@
     [self.mShareButton setFrame:CGRectMake([UIScreen mainScreen].bounds.size.width/3.0, 0, [UIScreen mainScreen].bounds.size.width/3.0, 40)];
     [self.mBGView addSubview:self.mCleanButton];
     [self.mCleanButton setFrame:CGRectMake([UIScreen mainScreen].bounds.size.width*2/3.0, 0, [UIScreen mainScreen].bounds.size.width/3.0, 40)];
+    //解密
+    [self.mBGView addSubview:self.mPasswordTextField];
+    self.mPasswordTextField.frame = CGRectMake(0, 40, [UIScreen mainScreen].bounds.size.width/3.0 + 50, 40);
+    [self.mBGView addSubview:self.mPasswordButton];
+    self.mPasswordButton.frame = CGRectMake([UIScreen mainScreen].bounds.size.width/3.0 + 50, 40, [UIScreen mainScreen].bounds.size.width/3.0 - 50, 40);
+    //开关视图
+    [self.mBGView addSubview:self.mSwitchLabel];
+    [self.mSwitchLabel setFrame:CGRectMake([UIScreen mainScreen].bounds.size.width * 2.0 /3.0 + 6, 40, 90, 40)];
+    [self.mBGView addSubview:self.mAutoScrollSwitch];
+    [self.mAutoScrollSwitch setFrame:CGRectMake([UIScreen mainScreen].bounds.size.width - 60, 45, 60, 40)];
     
     //滚动日志窗
     [self.mBGView addSubview:self.mTableView];
-    [self.mTableView setFrame:CGRectMake(0, 40, [UIScreen mainScreen].bounds.size.width, 300 - 80)];
-    
-    //开关视图
-    [self.mBGView addSubview:self.mAutoScrollSwitch];
-    [self.mAutoScrollSwitch setFrame:CGRectMake([UIScreen mainScreen].bounds.size.width- 60, 40, 60, 40)];
-    [self.mBGView addSubview:self.mSwitchLabel];
-    [self.mSwitchLabel setFrame:CGRectMake([UIScreen mainScreen].bounds.size.width- 155, 40, 90, 30)];
+    [self.mTableView setFrame:CGRectMake(0, 80, [UIScreen mainScreen].bounds.size.width, 220)];
     
     [self.mBGView addSubview:self.mSearchBar];
-    [self.mSearchBar setFrame:CGRectMake(0, 300 - 40, [UIScreen mainScreen].bounds.size.width, 40)];
+    [self.mSearchBar setFrame:CGRectMake(0, 300, [UIScreen mainScreen].bounds.size.width, 40)];
 }
 
 - (void)p_bindClick {
     [self.mHideButton addTarget:self action:@selector(p_hideLogWindow) forControlEvents:UIControlEventTouchUpInside];
     [self.mCleanButton addTarget:self action:@selector(p_cleanLog) forControlEvents:UIControlEventTouchUpInside];
     [self.mShareButton addTarget:self action:@selector(p_share) forControlEvents:UIControlEventTouchUpInside];
+    [self.mPasswordButton addTarget:self action:@selector(p_decrypt) forControlEvents:UIControlEventTouchUpInside];
 }
 
 
@@ -235,12 +261,20 @@
     for (HDWindowLoggerItem *item in self.mLogDataArray) {
         //单独写内容是为了文件换行
         NSString *dateStr = [dateFormatter stringFromDate:item.mCreateDate];
-        [mutableArray addObject:dateStr];
+        [mutableArray addObject:[NSString stringWithFormat:@"%@  >  %@",dateStr, item.mLogDebugContent]];
         [mutableArray addObject: item.mLogContent];
     }
     //写入文件
     NSData *jsonData = [NSJSONSerialization dataWithJSONObject:mutableArray options:NSJSONWritingPrettyPrinted error:nil];
-    [jsonData writeToFile:logFilePath atomically:YES];
+    
+    if (HDWindowLogger.defaultWindowLogger.mPasswordCorrect) {
+        [jsonData writeToFile:logFilePath atomically:YES];
+    } else {
+        NSData *data = [self p_cryptWithData:jsonData];
+        NSString *dataString = [data base64EncodedStringWithOptions:NSDataBase64EncodingEndLineWithLineFeed];
+        [dataString writeToFile:logFilePath atomically:YES encoding:NSUTF8StringEncoding error:nil];
+    }
+    
     
     //分享
     NSURL *url = [NSURL fileURLWithPath:logFilePath];
@@ -284,6 +318,12 @@
     }
 }
 
+- (void)p_decrypt {
+    [self.mPasswordTextField resignFirstResponder];
+    [self.mSearchBar resignFirstResponder];
+    [self.mTableView reloadData];
+}
+
 - (UIViewController *)p_getCurrentVC {
     UIWindow * window = [[UIApplication sharedApplication] keyWindow];
     if (window.windowLevel != UIWindowLevelNormal) {
@@ -315,6 +355,71 @@
         result = [((UINavigationController*)result) visibleViewController];
     }
     return result;
+}
+
+//内容加密
+- (NSData *)p_cryptWithData:(NSData *)data {
+    NSString *ivString = @"abcdefghijklmnop";
+    
+    NSData *keyData = [self.mPrivacyPassword dataUsingEncoding:NSUTF8StringEncoding];
+    NSData *ivData = [ivString dataUsingEncoding:NSUTF8StringEncoding];
+    
+    NSUInteger dataLength = [data length];
+    //See the doc: For block ciphers, the output size will always be less than or
+    //equal to the input size plus the size of one block.
+    //That's why we need to add the size of one block here
+    size_t bufferSize = dataLength + kCCKeySizeAES128;
+    void *buffer = malloc(bufferSize);
+    
+    size_t numBytesEncrypted = 0;
+    CCCryptorStatus cryptStatus = CCCrypt(kCCEncrypt, kCCAlgorithmAES, kCCOptionPKCS7Padding,
+                                          [keyData bytes], kCCKeySizeAES256,
+                                          [ivData bytes] /* initialization vector (optional) */,
+                                          [data bytes], dataLength, /* input */
+                                          buffer, bufferSize, /* output */
+                                          &numBytesEncrypted);
+    if (cryptStatus == kCCSuccess) {
+        //the returned NSData takes ownership of the buffer and will free it on deallocation
+        return [NSData dataWithBytesNoCopy:buffer length:numBytesEncrypted];
+    }
+    
+    free(buffer); //free the buffer;
+    return nil;
+}
+
+- (NSString *)p_base64Encoding:(NSData *)data;
+{
+
+    static const char encodingTable[] = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/";
+    
+    if ([data length] == 0)
+        return @"";
+    
+    char *characters = malloc((([data length] + 2) / 3) * 4);
+    if (characters == NULL)
+        return nil;
+    NSUInteger length = 0;
+    
+    NSUInteger i = 0;
+    while (i < [data length])
+    {
+        char buffer[3] = {0,0,0};
+        short bufferLength = 0;
+        while (bufferLength < 3 && i < [data length])
+            buffer[bufferLength++] = ((char *)[data bytes])[i++];
+        
+        //  Encode the bytes in the buffer to four characters, including padding "=" characters if necessary.
+        characters[length++] = encodingTable[(buffer[0] & 0xFC) >> 2];
+        characters[length++] = encodingTable[((buffer[0] & 0x03) << 4) | ((buffer[1] & 0xF0) >> 4)];
+        if (bufferLength > 1)
+            characters[length++] = encodingTable[((buffer[1] & 0x0F) << 2) | ((buffer[2] & 0xC0) >> 6)];
+        else characters[length++] = '=';
+        if (bufferLength > 2)
+            characters[length++] = encodingTable[buffer[2] & 0x3F];
+        else characters[length++] = '=';
+    }
+    
+    return [[[NSString alloc] initWithBytesNoCopy:characters length:length encoding:NSASCIIStringEncoding freeWhenDone:YES] init];
 }
 
 #pragma mark -
@@ -385,6 +490,32 @@
     return _mShareButton;
 }
 
+- (UITextField *)mPasswordTextField {
+    if (!_mPasswordTextField) {
+        _mPasswordTextField = [[UITextField alloc] init];
+        _mPasswordTextField.delegate = self;
+        NSMutableAttributedString *attributedString = [[NSMutableAttributedString alloc] initWithString:NSLocalizedString(@"输入密码查看加密数据", comment: @"") attributes:[NSDictionary dictionaryWithObjectsAndKeys:[UIFont systemFontOfSize:14],NSFontAttributeName,[UIColor colorWithRed:255.0/255.0 green:255.0/255.0 blue:255.0/255.0 alpha:0.7],NSForegroundColorAttributeName, nil]];
+        _mPasswordTextField.attributedPlaceholder = attributedString;
+        _mPasswordTextField.textColor = [UIColor colorWithRed:255.0/255.0 green:255.0/255.0 blue:255.0/255.0 alpha:0.7];
+        _mPasswordTextField.layer.masksToBounds = true;
+        _mPasswordTextField.layer.borderColor = [UIColor colorWithRed:255.0/255.0 green:255.0/255.0 blue:255.0/255.0 alpha:1.0].CGColor;
+        _mPasswordTextField.layer.borderWidth = 1.0;
+    }
+    return _mPasswordTextField;
+}
+
+- (UIButton *)mPasswordButton {
+    if (!_mPasswordButton) {
+        _mPasswordButton = [UIButton buttonWithType:UIButtonTypeCustom];
+        _mPasswordButton.backgroundColor = [UIColor colorWithRed:66.0/255.0 green:230.0/255.0 blue:164.0/255.0 alpha:1.0];
+        [_mPasswordButton setTitle:NSLocalizedString(@"解密", comment: @"") forState:UIControlStateNormal];
+        [_mPasswordButton setTitleColor:[UIColor colorWithRed:255.0/255.0 green:255.0/255.0 blue:255.0/255.0 alpha:1.0] forState:UIControlStateNormal];
+        _mPasswordButton.layer.masksToBounds = true;
+        _mPasswordButton.layer.borderColor = [UIColor colorWithRed:255.0/255.0 green:255.0/255.0 blue:255.0/255.0 alpha:1.0].CGColor;
+        _mPasswordButton.layer.borderWidth = 1.0;
+    }
+    return _mPasswordButton;
+}
 
 - (UIWindow *)mFloatWindow {
     if (!_mFloatWindow) {
@@ -521,5 +652,13 @@
 
 - (void)searchBarSearchButtonClicked:(UISearchBar *)searchBar {
     [searchBar resignFirstResponder];
+}
+
+#pragma mark -
+#pragma mark - UITextFieldDelegate
+- (BOOL)textFieldShouldReturn:(UITextField *)textField {
+    [textField resignFirstResponder];
+    [self p_decrypt];
+    return  true;
 }
 @end
