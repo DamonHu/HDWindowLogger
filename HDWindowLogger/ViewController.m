@@ -18,26 +18,6 @@
 - (void)viewDidLoad {
     [super viewDidLoad];
     
-    
-}
-
-- (void)viewDidAppear:(BOOL)animated {
-    [super viewDidAppear:animated];
-    [HDWindowLogger defaultWindowLogger].mCompleteLogOut = true;
-    [HDWindowLogger show];
-    HDNormalLog(@"收到就好丰盛的金凤凰就水电费交换机时间开始的回复是砍价的回复四大皆空回复速度快解放后搜的飞机开会接口是点击开发还是手机打开混分巨兽地方收到就好丰盛的金凤凰就水电费交换机时间开始的回复是砍价的回复四大皆空回复速度快解放后搜的飞机开会接口是点击开发还是手机打开混分巨兽地方收到就好丰盛的金凤凰就水电费交换机时间开始的回复是砍价的回复四大皆空回复速度快解放后搜的飞机开会接口是点击开发还是手机打开混分巨兽地方收到就好丰盛的金凤凰就水电费交换机时间开始的回复是砍价的回复四大皆空回复速度快解放后搜的飞机开会接口是点击开发还是手机打开混分巨兽地方收到就好丰盛的金凤凰就水电费交换机时间开始的回复是砍价的回复四大皆空回复速度快解放后搜的飞机开会接口是点击开发还是手机打开混分巨兽地方收到就好丰盛的金凤凰就水电费交换机时间开始的回复是砍价的回复四大皆空回复速度快解放后搜的飞机开会接口是点击开发还是手机打开混分巨兽地方");
-    
-    dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(2.0 * NSEC_PER_SEC)), dispatch_get_main_queue(), ^{
-        HDErrorLog(@"sdf这个是错误的收到就好丰盛的金凤凰就水电费交换机时间开始的回复是砍价的回复四大皆空回复速度快解放后搜的飞机开会接口是点击开发还是手机打开混分巨兽地方收到就好丰盛的金凤凰就水电费交换机时间开始的回复是砍价的回复四大皆空回复速度快解放后搜的飞机开会接口是点击开发还是手机打开混分巨兽地方");
-    });
-    
-    dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(3.0 * NSEC_PER_SEC)), dispatch_get_main_queue(), ^{
-        HDWarnLog(@"收到就好丰盛的金凤凰就水电费交mmm换机时间开始的回复是砍价的回复四大皆空回复速度快解放后搜的飞机开会接口是点击开发还是手机打开混分巨兽地方收到就好丰盛的金凤凰就水电费交换机时间开始的回复是砍价的回复四大皆空回复速度快解放后搜的飞机开会接口是点击开发还是手机打开混分巨兽地方收到就好丰盛的金凤凰就水电费交换机时间开始的回复是砍价的回复四大皆空回复速度快解放后搜的飞机开会接口是点击开发还是手机打开混分巨兽地方");
-    });
-    
-    dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(4.0 * NSEC_PER_SEC)), dispatch_get_main_queue(), ^{
-        HDWarnLog(@"nnnnnnnnnnnn");
-    });
     UIButton *button = [[UIButton alloc] initWithFrame:CGRectMake(0, [UIScreen mainScreen].bounds.size.height - 130, 200, 100)];
     button.backgroundColor = [UIColor redColor];
     [button setTitle:@"点击添加日志" forState:UIControlStateNormal];
@@ -45,8 +25,18 @@
     [self.view addSubview:button];
 }
 
+- (void)viewDidAppear:(BOOL)animated {
+    [super viewDidAppear:animated];
+    [HDWindowLogger defaultWindowLogger].mCompleteLogOut = true;
+    [HDWindowLogger show];
+    [HDWindowLogger defaultWindowLogger].mPrivacyPassword = @"12345678901234561234567890123456";
+}
+
 - (void)p_click {
+    HDNormalLog(@"正常显示内容");
+    HDWarnLog(@"警告内容");
     HDErrorLog(@"点击按钮");
+    HDPrivacyLog(@"这是一个加密内容sssss");
     NSDictionary *dic = @{@"hhhhhhh":@"撒旦法是打发斯蒂芬是打发斯蒂芬",@"2222":@"更多内容"};
     HDNormalLog(dic);
     NSArray *array = @[@"2323232323",@"6666678798778",@"00000000"];
