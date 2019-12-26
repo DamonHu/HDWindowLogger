@@ -62,6 +62,7 @@ The font colors of the three output methods are different, and the corresponding
 HDNormalLog(@"点击按钮"); 	//Log's textColor is green
 HDWarnLog(@"点击按钮");		//log's textColor is yellow
 HDErrorLog(@"点击按钮");		//Log's textColor is red
+HDPrivacyLog (@"加密数据") // Output of encrypted data, the specific encryption method is described in the following encryption
 ```
 
 Output format
@@ -122,7 +123,46 @@ If set to output all debugging information, the output format is as follows, inc
 [HDWindowLogger setMaxLogCount:100];
 ```
 
-## III. Other instructions
+## IV. sensitive information output encryption and decryption
+
+If there is sensitive information that you don't want users to see when debugging, you can set encryption in two simple steps
+
+```
+// 1. Set the encryption password,  32 characters
+[HDWindowLogger defaultWindowLogger].mPrivacyPassword = @"12345678901234561234567890123456";
+
+// 2, output encrypted content
+HDPrivacyLog (@"This is test data 222 for encrypted data")
+```
+
+### 4.2 Decrypt the contents of the display window
+
+After the setting, the display in the display window is `This content is encrypted, please view it after decryption`, enter the set encryption password and click decrypt to display the normal encrypted content.
+
+### 4.1. Decrypting shared files
+
+* If the data has been decrypted in the display window, the content of the shared file will not be encrypted at this time, and all content will be displayed.
+* If it is not decrypted in the display window, the content of the file shared at this time is AES encrypted content, you can search the `AES Online Decryption Website` to decrypt the content, and the settings are as follows:
+
+![](./ReadmeImage/decrypt.png)
+
+* Mode: CBC
+* Fill: Pkcs7
+* Data block: 128 bits
+* Offset: `abcdefghijklmnop`
+* Encoding: Base64
+* Character set: UTF8
+* Password: The password you set in the SDK yourself
+
+Then click Decrypt.
+
+Here are a few online sites recommended, you can also Google it by yourself
+
+* [https://oktools.net/aes](https://oktools.net/aes)
+* [http://tools.bugscaner.com/cryptoaes/](http://tools.bugscaner.com/cryptoaes/)
+* [http://tool.chacuo.net/cryptaes](http://tool.chacuo.net/cryptaes)
+
+## V. Other instructions
 
 1. For the convenience of viewing, it is divided into three types: normal, warning and error. It corresponds to three different colors for easy viewing.
 2. Click the corresponding cell to copy the output log directly to the system clipboard.
@@ -183,6 +223,7 @@ pod 'HDWindowLogger'
 HDNormalLog(@"点击按钮"); 	//日志为绿色
 HDWarnLog(@"点击按钮");		//日志为黄色
 HDErrorLog(@"点击按钮");		//日志为红色
+HDPrivacyLog(@"点击按钮")	//加密数据的输出，具体加密方式在下面的加密中说明
 ```
 
 输出格式
@@ -244,8 +285,47 @@ HDErrorLog(@"点击按钮");		//日志为红色
 [HDWindowLogger setMaxLogCount:100];
 ```
 
+## 四、 敏感信息输出加密和解密
 
-## 三、其他说明
+如果存在敏感信息，不希望用户或者手机调试时看到，简单两步就可以设置加密
+
+```
+//1、设置加密密码，32个字符数字
+[HDWindowLogger defaultWindowLogger].mPrivacyPassword = @"12345678901234561234567890123456";
+
+//2、输出加密内容
+HDPrivacyLog(@"这个是加密数据的测试数据222")
+```
+
+### 4.2、显示窗内容解密
+
+设置之后，在显示窗中的显示为`该内容已加密，请解密后查看`，输入设置的加密密码然后点击解密之后即可显示正常的加密内容。
+
+### 4.1、 分享文件解密
+
+* 如果已经在显示窗解密了数据，此时分享的文件内容不会加密，会显示所有内容。
+* 如果在显示窗中未解密，此时分享出的文件内容为AES加密内容，可以搜索`AES在线解密的网站`去解密内容，设置参照下图：
+
+![](./ReadmeImage/decrypt.png)
+
+* 模式: CBC
+* 填充: Pkcs7
+* 数据块: 128位
+* 偏移量: abcdefghijklmnop
+* 编码: Base64
+* 字符集: UTF8
+* 密码: 你自己在sdk中设置的密码
+
+然后点击解密即可。
+
+这里推荐几个在线的网站，你也可以自己百度
+
+* [https://oktools.net/aes](https://oktools.net/aes)
+* [http://tools.bugscaner.com/cryptoaes/](http://tools.bugscaner.com/cryptoaes/)
+* [http://tool.chacuo.net/cryptaes](http://tool.chacuo.net/cryptaes)
+
+
+## 五、其他说明
 
 1. 为了查看方便，分为普通、警告、错误三种类型，对应了三种不同的颜色，方便查看
 2. 点击对应的cell可以直接将输出log复制到系统剪贴板
