@@ -120,29 +120,31 @@
 /// @param line 调用输出的行数
 /// @param funcationName 调用输出的函数名
 + (void)printLog:(id)log withLogType:(HDLogType)logType file:(NSString *)fileName line:(NSInteger)line functionName:(NSString *)funcationName {
-    if ([self defaultWindowLogger].mLogDataArray.count == 0) {
-        //如果是第一条，就插入一条默认帮助提示
+    dispatch_async(dispatch_get_main_queue(), ^{
+        if ([self defaultWindowLogger].mLogDataArray.count == 0) {
+            //如果是第一条，就插入一条默认帮助提示
+            HDWindowLoggerItem *item = [[HDWindowLoggerItem alloc] init];
+            item.mLogItemType = kHDLogTypeWarn;
+            item.mCreateDate = [NSDate date];
+            item.mLogDebugContent = @"";
+            item.mLogContent = NSLocalizedString(@"HDWindowLogger: 点击对应日志可快速复制", nil);
+            [[self defaultWindowLogger].mLogDataArray addObject:item];
+        }
         HDWindowLoggerItem *item = [[HDWindowLoggerItem alloc] init];
-        item.mLogItemType = kHDLogTypeWarn;
+        item.mLogItemType = logType;
         item.mCreateDate = [NSDate date];
-        item.mLogDebugContent = @"";
-        item.mLogContent = NSLocalizedString(@"HDWindowLogger: 点击对应日志可快速复制", nil);
+        item.mLogDebugContent = [NSString stringWithFormat:@"[File:\(%@)]:[Line:\(%ld):[Function:\(%@)]]-Log:",fileName,(long)line,funcationName];
+        item.mLogContent = log;
+        if ([self defaultWindowLogger].mDebugAreaLogOut) {
+            NSLog(@"%@",[item getFullContentString]);
+        }
+        
         [[self defaultWindowLogger].mLogDataArray addObject:item];
-    }
-    HDWindowLoggerItem *item = [[HDWindowLoggerItem alloc] init];
-    item.mLogItemType = logType;
-    item.mCreateDate = [NSDate date];
-    item.mLogDebugContent = [NSString stringWithFormat:@"[File:\(%@)]:[Line:\(%ld):[Function:\(%@)]]-Log:",fileName,(long)line,funcationName];
-    item.mLogContent = log;
-    if ([self defaultWindowLogger].mDebugAreaLogOut) {
-        NSLog(@"%@",[item getFullContentString]);
-    }
-    
-    [[self defaultWindowLogger].mLogDataArray addObject:item];
-    if ([self defaultWindowLogger].mMaxLogCount > 0 && [self defaultWindowLogger].mLogDataArray.count > [self defaultWindowLogger].mMaxLogCount) {
-        [[self defaultWindowLogger].mLogDataArray removeObjectAtIndex:0];
-    }
-    [[self defaultWindowLogger] p_reloadFilter];
+        if ([self defaultWindowLogger].mMaxLogCount > 0 && [self defaultWindowLogger].mLogDataArray.count > [self defaultWindowLogger].mMaxLogCount) {
+            [[self defaultWindowLogger].mLogDataArray removeObjectAtIndex:0];
+        }
+        [[self defaultWindowLogger] p_reloadFilter];
+    });
 }
 
 /**
