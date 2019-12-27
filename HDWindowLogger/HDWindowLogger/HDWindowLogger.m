@@ -19,7 +19,19 @@
     //内容
     NSString *contentString = @"";
     if (self.mLogItemType == kHDLogTypePrivacy) {
-        contentString = [NSString stringWithFormat:@"%@",self.mLogContent];
+        if ([NSJSONSerialization isValidJSONObject:self.mLogContent]) {
+            NSError *error;
+            NSData *jsonData = [NSJSONSerialization dataWithJSONObject:self.mLogContent
+                                                               options:NSJSONWritingPrettyPrinted
+                                                                 error:&error];
+            if (!jsonData) {
+                contentString = [NSString stringWithFormat:@"%@",self.mLogContent];
+            } else {
+                contentString = [[NSString alloc] initWithData:jsonData encoding:NSUTF8StringEncoding];
+            }
+        } else {
+            contentString = [NSString stringWithFormat:@"%@",self.mLogContent];
+        }
         if (!HDWindowLogger.defaultWindowLogger.mPasswordCorrect) {
             contentString = NSLocalizedString(@"该内容已加密，请解密后查看", comment: @"");
         }
@@ -27,7 +39,19 @@
             contentString = NSLocalizedString(@"密码设置长度错误，需要32个字符", comment: @"");
         }
     } else {
-        contentString = [NSString stringWithFormat:@"%@",self.mLogContent];
+        if ([NSJSONSerialization isValidJSONObject:self.mLogContent]) {
+            NSError *error;
+            NSData *jsonData = [NSJSONSerialization dataWithJSONObject:self.mLogContent
+                                                               options:NSJSONWritingPrettyPrinted
+                                                                 error:&error];
+            if (!jsonData) {
+                contentString = [NSString stringWithFormat:@"%@",self.mLogContent];
+            } else {
+                contentString = [[NSString alloc] initWithData:jsonData encoding:NSUTF8StringEncoding];
+            }
+        } else {
+            contentString = [NSString stringWithFormat:@"%@",self.mLogContent];
+        }
     }
     if (HDWindowLogger.defaultWindowLogger.mCompleteLogOut) {
         return [NSString stringWithFormat:@"%@   >     %@\n%@",dateStr, self.mLogDebugContent, contentString];
@@ -53,7 +77,7 @@
 @property (strong, nonatomic) UIButton *mShareButton;
 @property (strong, nonatomic) UIWindow *mFloatWindow;
 @property (strong, nonatomic) UILabel *mSwitchLabel;
-@property (strong, nonatomic) UISwitch *mAutoScrollSwitch; //输出日志自动滚动
+@property (strong, nonatomic) UISwitch *mAutoScrollSwitch; //输出自动滚动
 @property (strong, nonatomic) UISearchBar *mSearchBar;
 @end
 
@@ -555,7 +579,7 @@
 - (UILabel *)mSwitchLabel {
     if (!_mSwitchLabel) {
         _mSwitchLabel = [[UILabel alloc] init];
-        _mSwitchLabel.text = NSLocalizedString(@"日志自动滚动", nil);
+        _mSwitchLabel.text = NSLocalizedString(@"自动滚动", nil);
         _mSwitchLabel.textAlignment = NSTextAlignmentRight;
         _mSwitchLabel.font = [UIFont systemFontOfSize:13];
         _mSwitchLabel.textColor = [UIColor whiteColor];
