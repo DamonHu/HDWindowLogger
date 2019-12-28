@@ -53,7 +53,7 @@
         NSMutableAttributedString *newString = [[NSMutableAttributedString alloc] initWithString: contentString];
         NSError *error;
         NSRegularExpression *regex = [[NSRegularExpression alloc] initWithPattern:searchText options:NSRegularExpressionCaseInsensitive error:&error];
-        if (!error) {
+        if (error) {
             [self.mContentLabel setText:[item getFullContentString]];
         } else {
             [regex enumerateMatchesInString:contentString options:NSMatchingReportProgress range:NSMakeRange(0, [contentString length]) usingBlock:^(NSTextCheckingResult *result, NSMatchingFlags flags, BOOL *stop) {
