@@ -28,8 +28,7 @@
     [self.contentView addSubview:self.mContentLabel];
 }
 
-- (void)updateWithLoggerItem:(HDWindowLoggerItem *)item {
-    [self.mContentLabel setText:[item getFullContentString]];
+- (void)updateWithLoggerItem:(HDWindowLoggerItem *)item withSearchText:(NSString *)searchText {
     switch (item.mLogItemType) {
         case kHDLogTypeNormal: {
             [self.mContentLabel setTextColor:[UIColor colorWithRed:80.0/255.0 green:216.0/255.0 blue:144.0/255.0 alpha:1.0]];
@@ -49,6 +48,22 @@
             break;
     }
     
+    if (searchText && searchText.length > 0) {
+        NSString *contentString = [item getFullContentString];
+        NSMutableAttributedString *newString = [[NSMutableAttributedString alloc] initWithString: contentString];
+        NSError *error;
+        NSRegularExpression *regex = [[NSRegularExpression alloc] initWithPattern:searchText options:NSRegularExpressionCaseInsensitive error:&error];
+        if (!error) {
+            [self.mContentLabel setText:[item getFullContentString]];
+        } else {
+            [regex enumerateMatchesInString:contentString options:NSMatchingReportProgress range:NSMakeRange(0, [contentString length]) usingBlock:^(NSTextCheckingResult *result, NSMatchingFlags flags, BOOL *stop) {
+                [newString addAttribute:NSForegroundColorAttributeName value:[UIColor colorWithRed:255.0/255.0 green:0.0 blue:0.0 alpha:1.0] range:result.range];
+                [self.mContentLabel setAttributedText: newString];
+            }];
+        }
+    } else {
+        [self.mContentLabel setText:[item getFullContentString]];
+    }
     
     CGSize size = [self.mContentLabel sizeThatFits:CGSizeMake([UIScreen mainScreen].bounds.size.width, MAXFLOAT)];
     [self.mContentLabel setFrame:CGRectMake(0, 0, size.width, ceil(size.height) + 1)];

@@ -331,7 +331,7 @@
     NSArray *copyArray = [NSArray arrayWithArray:self.mLogDataArray];
     for (HDWindowLoggerItem *item in copyArray) {
         if (self.mSearchBar.text.length > 0) {
-            if ([[item getFullContentString] containsString:self.mSearchBar.text]) {
+            if ([[item getFullContentString] localizedCaseInsensitiveContainsString:self.mSearchBar.text]) {
                 [self.mFilterLogDataArray addObject:item];
             }
         } else {
@@ -580,7 +580,7 @@
     if (!_mSwitchLabel) {
         _mSwitchLabel = [[UILabel alloc] init];
         _mSwitchLabel.text = NSLocalizedString(@"自动滚动", nil);
-        _mSwitchLabel.textAlignment = NSTextAlignmentRight;
+        _mSwitchLabel.textAlignment = NSTextAlignmentLeft;
         _mSwitchLabel.font = [UIFont systemFontOfSize:13];
         _mSwitchLabel.textColor = [UIColor whiteColor];
     }
@@ -619,7 +619,7 @@
     } else {
         cell.backgroundColor = [UIColor clearColor];
     }
-    [cell updateWithLoggerItem:item];
+    [cell updateWithLoggerItem:item withSearchText:self.mSearchBar.text];
     return cell;
 }
 
