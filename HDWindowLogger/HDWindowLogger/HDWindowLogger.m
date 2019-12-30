@@ -72,6 +72,7 @@
 @property (strong, nonatomic) UITableView *mTableView;
 @property (strong, nonatomic) UIButton *mCleanButton;
 @property (strong, nonatomic) UITextField *mPasswordTextField;
+@property (copy, nonatomic) NSString *mTextPassword;         //输入的解密密码
 @property (strong, nonatomic) UIButton *mPasswordButton;
 @property (strong, nonatomic) UIButton *mHideButton;
 @property (strong, nonatomic) UIButton *mShareButton;
@@ -98,6 +99,7 @@
         defaultLogger.mCompleteLogOut = true;
         defaultLogger.mDebugAreaLogOut = true;
         defaultLogger.mPrivacyPassword = @"";
+        defaultLogger.mTextPassword = @"";
     });
     return defaultLogger;
 }
@@ -125,7 +127,7 @@
 }
 
 - (BOOL)mPasswordCorrect {
-    return [self.mPasswordTextField.text isEqualToString:self.mPrivacyPassword];
+    return [self.mTextPassword isEqualToString:self.mPrivacyPassword];
 }
 
 #pragma mark -
@@ -357,33 +359,28 @@
         }];
     }
     [self.mFilterIndexArray removeAllObjects];
-    NSArray *copyArray = [NSArray arrayWithArray:self.mLogDataArray];
-
-    for (int i = 0; i < copyArray.count; i++) {
-        if (self.mSearchBar.text.length > 0) {
-            HDWindowLoggerItem *item = [copyArray objectAtIndex:i];
-            if ([[item getFullContentString] localizedCaseInsensitiveContainsString:self.mSearchBar.text]) {
-                NSIndexPath *indexPath = [NSIndexPath indexPathForRow:i inSection:0];
-                [self.mFilterIndexArray addObject:indexPath];
-                [UIView performWithoutAnimation:^{
-                    [self.mTableView reloadRowsAtIndexPaths:@[indexPath] withRowAnimation:UITableViewRowAnimationFade];
-                }];
-                
+    self.mPreviousButton.enabled = false;
+    self.mNextButton.enabled = false;
+    self.mSearchNumLabel.text = NSLocalizedString(@"0条结果", nil);
+    NSString *searchText = self.mSearchBar.text;
+    if (searchText.length > 0) {
+        NSArray *copyArray = [NSArray arrayWithArray:self.mLogDataArray];
+        [copyArray enumerateObjectsWithOptions:NSEnumerationConcurrent usingBlock:^(HDWindowLoggerItem * item, NSUInteger idx, BOOL * _Nonnull stop) {
+            if ([[item getFullContentString] localizedCaseInsensitiveContainsString:searchText]) {
+                dispatch_async(dispatch_get_main_queue(), ^{
+                    NSIndexPath *indexPath = [NSIndexPath indexPathForRow:idx inSection:0];
+                    [self.mFilterIndexArray addObject:indexPath];
+                    [UIView performWithoutAnimation:^{
+                        [self.mTableView reloadRowsAtIndexPaths:@[indexPath] withRowAnimation:UITableViewRowAnimationFade];
+                    }];
+                    self.mPreviousButton.enabled = true;
+                    self.mNextButton.enabled = true;
+                    self.mCurrentSearchIndex = self.mFilterIndexArray.count - 1;
+                    self.mSearchNumLabel.text = [NSString stringWithFormat:@"%ld/%lu",(long)self.mCurrentSearchIndex + 1, self.mFilterIndexArray.count];
+                });
             }
-        }
+        }];
     }
-    
-    if (self.mFilterIndexArray.count > 0) {
-        self.mPreviousButton.enabled = true;
-        self.mNextButton.enabled = true;
-        self.mCurrentSearchIndex = self.mFilterIndexArray.count - 1;
-        self.mSearchNumLabel.text = [NSString stringWithFormat:@"%ld/%lu",(long)self.mCurrentSearchIndex + 1, self.mFilterIndexArray.count];
-    } else {
-        self.mPreviousButton.enabled = false;
-        self.mNextButton.enabled = false;
-        self.mSearchNumLabel.text = NSLocalizedString(@"0条结果", nil);
-    }
-    
 }
 
 //上一条
@@ -636,6 +633,8 @@
         _mPreviousButton = [UIButton buttonWithType:UIButtonTypeCustom];
         [_mPreviousButton setBackgroundColor:[UIColor colorWithRed:255.0/255.0 green:118.0/255.0 blue:118.0/255.0 alpha:1.0]];
         [_mPreviousButton setTitle:NSLocalizedString(@"上一条", nil) forState:UIControlStateNormal];
+        [_mPreviousButton setTitleColor:[UIColor colorWithRed:255.0/255.0 green:255.0/255.0 blue:255.0/255.0 alpha:1.0] forState:UIControlStateNormal];
+        [_mPreviousButton setTitleColor:[UIColor colorWithRed:102.0/255.0 green:102.0/255.0 blue:102.0/255.0 alpha:1.0] forState:UIControlStateDisabled];
         [_mPreviousButton.titleLabel setFont:[UIFont systemFontOfSize:14]];
         _mPreviousButton.enabled = false;
     }
@@ -647,6 +646,8 @@
         _mNextButton = [UIButton buttonWithType:UIButtonTypeCustom];
         [_mNextButton setBackgroundColor:[UIColor colorWithRed:93.0/255.0 green:174.0/255.0 blue:139.0/255.0 alpha:1.0]];
         [_mNextButton setTitle:NSLocalizedString(@"下一条", nil) forState:UIControlStateNormal];
+        [_mNextButton setTitleColor:[UIColor colorWithRed:255.0/255.0 green:255.0/255.0 blue:255.0/255.0 alpha:1.0] forState:UIControlStateNormal];
+        [_mNextButton setTitleColor:[UIColor colorWithRed:102.0/255.0 green:102.0/255.0 blue:102.0/255.0 alpha:1.0] forState:UIControlStateDisabled];
         [_mNextButton.titleLabel setFont:[UIFont systemFontOfSize:14]];
         _mNextButton.enabled = false;
     }
@@ -750,6 +751,7 @@
 #pragma mark - UITextFieldDelegate
 - (BOOL)textFieldShouldReturn:(UITextField *)textField {
     [textField resignFirstResponder];
+    self.mTextPassword = textField.text;
     [self p_decrypt];
     return  true;
 }
