@@ -65,7 +65,7 @@
 #pragma mark - HDWindowLogger
 @interface HDWindowLogger () <UITableViewDelegate, UITableViewDataSource, UISearchBarDelegate, UITextFieldDelegate>
 @property (strong, nonatomic, readwrite) NSMutableArray *mLogDataArray;  //log信息内容
-@property (strong, nonatomic) NSMutableArray *mFilterLogDataArray;       //展示的筛选的log信息内容
+@property (strong, nonatomic) NSMutableArray *mFilterIndexArray;       //搜索的索引的index
 @property (assign, nonatomic) NSInteger mMaxLogCount;      //最大数
 
 @property (strong, nonatomic) UIView *mBGView;
@@ -79,6 +79,10 @@
 @property (strong, nonatomic) UILabel *mSwitchLabel;
 @property (strong, nonatomic) UISwitch *mAutoScrollSwitch; //输出自动滚动
 @property (strong, nonatomic) UISearchBar *mSearchBar;
+@property (strong, nonatomic) UIButton *mPreviousButton;      //上一条
+@property (strong, nonatomic) UIButton *mNextButton;          //下一条
+@property (strong, nonatomic) UILabel *mSearchNumLabel;       //搜索条数
+@property (assign, nonatomic) NSInteger mCurrentSearchIndex;  //当前搜索到的索引
 @end
 
 @implementation HDWindowLogger
@@ -167,6 +171,13 @@
         if ([self defaultWindowLogger].mMaxLogCount > 0 && [self defaultWindowLogger].mLogDataArray.count > [self defaultWindowLogger].mMaxLogCount) {
             [[self defaultWindowLogger].mLogDataArray removeObjectAtIndex:0];
         }
+        //滚动到底部
+        if ([self defaultWindowLogger].mLogDataArray.count > 0 && [self defaultWindowLogger].mAutoScrollSwitch.isOn) {
+            [[self defaultWindowLogger].mTableView reloadData];
+            dispatch_async(dispatch_get_main_queue(), ^{
+                [[self defaultWindowLogger].mTableView  scrollToRowAtIndexPath:[NSIndexPath indexPathForRow:[self defaultWindowLogger].mLogDataArray.count - 1 inSection:0] atScrollPosition:UITableViewScrollPositionBottom animated:YES];
+            });
+        }
         [[self defaultWindowLogger] p_reloadFilter];
     });
 }
@@ -176,7 +187,7 @@
  */
 + (void)cleanLog {
     [[self defaultWindowLogger].mLogDataArray removeAllObjects];
-    [[self defaultWindowLogger].mFilterLogDataArray removeAllObjects];
+    [[self defaultWindowLogger].mFilterIndexArray removeAllObjects];
     [[self defaultWindowLogger].mTableView reloadData];
 }
 
@@ -248,8 +259,18 @@
     [self.mBGView addSubview:self.mTableView];
     [self.mTableView setFrame:CGRectMake(0, 80, [UIScreen mainScreen].bounds.size.width, 220)];
     
+    //搜索
     [self.mBGView addSubview:self.mSearchBar];
-    [self.mSearchBar setFrame:CGRectMake(0, 300, [UIScreen mainScreen].bounds.size.width, 40)];
+    [self.mSearchBar setFrame:CGRectMake(0, 300, [UIScreen mainScreen].bounds.size.width - 180, 40)];
+    //
+    [self.mBGView addSubview:self.mPreviousButton];
+    [self.mPreviousButton setFrame:CGRectMake([UIScreen mainScreen].bounds.size.width - 180, 300, 60, 40)];
+    
+    [self.mBGView addSubview:self.mNextButton];
+    [self.mNextButton setFrame:CGRectMake([UIScreen mainScreen].bounds.size.width - 120, 300, 60, 40)];
+    
+    [self.mBGView addSubview:self.mSearchNumLabel];
+    [self.mSearchNumLabel setFrame:CGRectMake([UIScreen mainScreen].bounds.size.width - 60, 300, 60, 40)];
 }
 
 - (void)p_bindClick {
@@ -257,6 +278,8 @@
     [self.mCleanButton addTarget:self action:@selector(p_cleanLog) forControlEvents:UIControlEventTouchUpInside];
     [self.mShareButton addTarget:self action:@selector(p_share) forControlEvents:UIControlEventTouchUpInside];
     [self.mPasswordButton addTarget:self action:@selector(p_decrypt) forControlEvents:UIControlEventTouchUpInside];
+    [self.mPreviousButton addTarget:self action:@selector(p_previous) forControlEvents:UIControlEventTouchUpInside];
+    [self.mNextButton addTarget:self action:@selector(p_next) forControlEvents:UIControlEventTouchUpInside];
 }
 
 
@@ -327,23 +350,67 @@
 
 ///更新筛选数据
 - (void)p_reloadFilter {
-    [self.mFilterLogDataArray removeAllObjects];
+    //恢复默认显示
+    if (self.mFilterIndexArray.count > 0) {
+        [UIView performWithoutAnimation:^{
+            [self.mTableView reloadRowsAtIndexPaths:self.mFilterIndexArray withRowAnimation:UITableViewRowAnimationNone];
+        }];
+    }
+    [self.mFilterIndexArray removeAllObjects];
     NSArray *copyArray = [NSArray arrayWithArray:self.mLogDataArray];
-    for (HDWindowLoggerItem *item in copyArray) {
+
+    for (int i = 0; i < copyArray.count; i++) {
         if (self.mSearchBar.text.length > 0) {
+            HDWindowLoggerItem *item = [copyArray objectAtIndex:i];
             if ([[item getFullContentString] localizedCaseInsensitiveContainsString:self.mSearchBar.text]) {
-                [self.mFilterLogDataArray addObject:item];
+                NSIndexPath *indexPath = [NSIndexPath indexPathForRow:i inSection:0];
+                [self.mFilterIndexArray addObject:indexPath];
+                [UIView performWithoutAnimation:^{
+                    [self.mTableView reloadRowsAtIndexPaths:@[indexPath] withRowAnimation:UITableViewRowAnimationFade];
+                }];
+                
             }
-        } else {
-            [self.mFilterLogDataArray addObject:item];
         }
     }
-    [self.mTableView reloadData];
-    if (self.mFilterLogDataArray.count > 0 && self.mAutoScrollSwitch.isOn) {
-        [self.mTableView  scrollToRowAtIndexPath:[NSIndexPath indexPathForRow:self.mFilterLogDataArray.count - 1 inSection:0] atScrollPosition:UITableViewScrollPositionBottom animated:YES];
+    
+    if (self.mFilterIndexArray.count > 0) {
+        self.mPreviousButton.enabled = true;
+        self.mNextButton.enabled = true;
+        self.mCurrentSearchIndex = self.mFilterIndexArray.count - 1;
+        self.mSearchNumLabel.text = [NSString stringWithFormat:@"%ld/%lu",(long)self.mCurrentSearchIndex + 1, self.mFilterIndexArray.count];
+    } else {
+        self.mPreviousButton.enabled = false;
+        self.mNextButton.enabled = false;
+        self.mSearchNumLabel.text = NSLocalizedString(@"0条结果", nil);
+    }
+    
+}
+
+//上一条
+- (void)p_previous {
+    if (self.mFilterIndexArray.count > 0) {
+        self.mCurrentSearchIndex = self.mCurrentSearchIndex - 1;
+        if (self.mCurrentSearchIndex < 0) {
+            self.mCurrentSearchIndex = self.mFilterIndexArray.count - 1;
+        }
+        self.mSearchNumLabel.text = [NSString stringWithFormat:@"%ld/%lu",(long)self.mCurrentSearchIndex + 1, self.mFilterIndexArray.count];
+        [self.mTableView  scrollToRowAtIndexPath:[NSIndexPath indexPathForRow:self.mCurrentSearchIndex inSection:0] atScrollPosition:UITableViewScrollPositionTop animated:YES];
     }
 }
 
+//下一条
+- (void)p_next {
+    if (self.mFilterIndexArray.count > 0) {
+        self.mCurrentSearchIndex = self.mCurrentSearchIndex + 1;
+        if (self.mCurrentSearchIndex == self.mFilterIndexArray.count) {
+            self.mCurrentSearchIndex = 0;
+        }
+        self.mSearchNumLabel.text = [NSString stringWithFormat:@"%ld/%lu",(long)self.mCurrentSearchIndex + 1, self.mFilterIndexArray.count];
+        [self.mTableView scrollToRowAtIndexPath:[NSIndexPath indexPathForRow:self.mCurrentSearchIndex inSection:0] atScrollPosition:UITableViewScrollPositionTop animated:YES];
+    }
+}
+
+//点击解密
 - (void)p_decrypt {
     [self.mPasswordTextField resignFirstResponder];
     [self.mSearchBar resignFirstResponder];
@@ -413,41 +480,6 @@
     return nil;
 }
 
-- (NSString *)p_base64Encoding:(NSData *)data;
-{
-
-    static const char encodingTable[] = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/";
-    
-    if ([data length] == 0)
-        return @"";
-    
-    char *characters = malloc((([data length] + 2) / 3) * 4);
-    if (characters == NULL)
-        return nil;
-    NSUInteger length = 0;
-    
-    NSUInteger i = 0;
-    while (i < [data length])
-    {
-        char buffer[3] = {0,0,0};
-        short bufferLength = 0;
-        while (bufferLength < 3 && i < [data length])
-            buffer[bufferLength++] = ((char *)[data bytes])[i++];
-        
-        //  Encode the bytes in the buffer to four characters, including padding "=" characters if necessary.
-        characters[length++] = encodingTable[(buffer[0] & 0xFC) >> 2];
-        characters[length++] = encodingTable[((buffer[0] & 0x03) << 4) | ((buffer[1] & 0xF0) >> 4)];
-        if (bufferLength > 1)
-            characters[length++] = encodingTable[((buffer[1] & 0x0F) << 2) | ((buffer[2] & 0xC0) >> 6)];
-        else characters[length++] = '=';
-        if (bufferLength > 2)
-            characters[length++] = encodingTable[buffer[2] & 0x3F];
-        else characters[length++] = '=';
-    }
-    
-    return [[[NSString alloc] initWithBytesNoCopy:characters length:length encoding:NSASCIIStringEncoding freeWhenDone:YES] init];
-}
-
 #pragma mark -
 #pragma mark - Lazyload
 - (NSMutableArray *)mLogDataArray {
@@ -457,11 +489,11 @@
     return _mLogDataArray;
 }
 
-- (NSMutableArray *)mFilterLogDataArray {
-    if (!_mFilterLogDataArray) {
-        _mFilterLogDataArray = [NSMutableArray array];
+- (NSMutableArray *)mFilterIndexArray {
+    if (!_mFilterIndexArray) {
+        _mFilterIndexArray = [NSMutableArray array];
     }
-    return _mFilterLogDataArray;
+    return _mFilterIndexArray;
 }
 
 - (UIView *)mBGView {
@@ -599,15 +631,49 @@
     return _mSearchBar;
 }
 
+- (UIButton *)mPreviousButton {
+    if (!_mPreviousButton) {
+        _mPreviousButton = [UIButton buttonWithType:UIButtonTypeCustom];
+        [_mPreviousButton setBackgroundColor:[UIColor colorWithRed:255.0/255.0 green:118.0/255.0 blue:118.0/255.0 alpha:1.0]];
+        [_mPreviousButton setTitle:NSLocalizedString(@"上一条", nil) forState:UIControlStateNormal];
+        [_mPreviousButton.titleLabel setFont:[UIFont systemFontOfSize:14]];
+        _mPreviousButton.enabled = false;
+    }
+    return _mPreviousButton;
+}
+
+- (UIButton *)mNextButton {
+    if (!_mNextButton) {
+        _mNextButton = [UIButton buttonWithType:UIButtonTypeCustom];
+        [_mNextButton setBackgroundColor:[UIColor colorWithRed:93.0/255.0 green:174.0/255.0 blue:139.0/255.0 alpha:1.0]];
+        [_mNextButton setTitle:NSLocalizedString(@"下一条", nil) forState:UIControlStateNormal];
+        [_mNextButton.titleLabel setFont:[UIFont systemFontOfSize:14]];
+        _mNextButton.enabled = false;
+    }
+    return _mNextButton;
+}
+
+- (UILabel *)mSearchNumLabel {
+    if (!_mSearchNumLabel) {
+        _mSearchNumLabel = [[UILabel alloc] init];
+        _mSearchNumLabel.text = NSLocalizedString(@"0条结果", nil);
+        _mSearchNumLabel.textAlignment = NSTextAlignmentCenter;
+        _mSearchNumLabel.font = [UIFont systemFontOfSize:12];
+        _mSearchNumLabel.textColor = [UIColor whiteColor];
+        _mSearchNumLabel.backgroundColor = [UIColor colorWithRed:57.0/255.0 green:74.0/255.0 blue:81.0/255.0 alpha:1.0];
+    }
+    return _mSearchNumLabel;
+}
+
 #pragma mark -
 #pragma mark - UITableViewDataSource
 - (NSInteger)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section {
-    return self.mFilterLogDataArray.count;
+    return self.mLogDataArray.count;
 }
 
 - (UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath {
     static NSString *identifier = @"loggerCellIdentifier";
-    HDWindowLoggerItem *item = [self.mFilterLogDataArray objectAtIndex:indexPath.row];
+    HDWindowLoggerItem *item = [self.mLogDataArray objectAtIndex:indexPath.row];
     
     HDLoggerTableViewCell *cell = [tableView dequeueReusableCellWithIdentifier:identifier];
     if (!cell) {
@@ -626,7 +692,7 @@
 #pragma mark -
 #pragma mark - UITableViewDelegate
 - (CGFloat)tableView:(UITableView *)tableView heightForRowAtIndexPath:(NSIndexPath *)indexPath {
-    HDWindowLoggerItem *item = [self.mFilterLogDataArray objectAtIndex:indexPath.row];
+    HDWindowLoggerItem *item = [self.mLogDataArray objectAtIndex:indexPath.row];
     UILabel *label = [[UILabel alloc] init];
     label.numberOfLines = 0;
     label.font = [UIFont systemFontOfSize:13];
@@ -654,7 +720,7 @@
 }
 
 - (void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath {
-    HDWindowLoggerItem *item = [self.mFilterLogDataArray objectAtIndex:indexPath.row];
+    HDWindowLoggerItem *item = [self.mLogDataArray objectAtIndex:indexPath.row];
     UIPasteboard *pasteboard = [UIPasteboard generalPasteboard];
     pasteboard.string = [item getFullContentString];
     
