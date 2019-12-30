@@ -173,9 +173,9 @@
         if ([self defaultWindowLogger].mMaxLogCount > 0 && [self defaultWindowLogger].mLogDataArray.count > [self defaultWindowLogger].mMaxLogCount) {
             [[self defaultWindowLogger].mLogDataArray removeObjectAtIndex:0];
         }
+        [[self defaultWindowLogger].mTableView reloadData];
         //滚动到底部
         if ([self defaultWindowLogger].mLogDataArray.count > 0 && [self defaultWindowLogger].mAutoScrollSwitch.isOn) {
-            [[self defaultWindowLogger].mTableView reloadData];
             dispatch_async(dispatch_get_main_queue(), ^{
                 [[self defaultWindowLogger].mTableView  scrollToRowAtIndexPath:[NSIndexPath indexPathForRow:[self defaultWindowLogger].mLogDataArray.count - 1 inSection:0] atScrollPosition:UITableViewScrollPositionBottom animated:YES];
             });
