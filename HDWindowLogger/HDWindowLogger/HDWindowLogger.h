@@ -86,6 +86,7 @@ typedef NS_ENUM(NSUInteger, HDLogType) {
 
 #pragma mark -
 #pragma mark - 每个打印的item
+typedef void (^HighlightComplete)(BOOL hasHighlightStr, NSAttributedString *hightlightAttributedString);
 @interface HDWindowLoggerItem : NSObject
 @property (assign, nonatomic) HDLogType mLogItemType;
 @property (strong, nonatomic) id mLogContent;
@@ -94,6 +95,9 @@ typedef NS_ENUM(NSUInteger, HDLogType) {
 
 ///获取item的拼接的打印内容
 - (NSString *)getFullContentString;
+
+///设置需要高亮的字符串
+- (void)getHighlightCompleteString:(NSString *)highlightString complete:(HighlightComplete)complete;
 @end
 
 NS_ASSUME_NONNULL_END

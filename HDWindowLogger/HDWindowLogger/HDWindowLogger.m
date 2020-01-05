@@ -10,6 +10,13 @@
 #import "HDLoggerTableViewCell.h"
 #import <CommonCrypto/CommonCryptor.h>
 
+@interface HDWindowLoggerItem ()
+@property (assign, nonatomic) CGFloat mCellHeight;  //内容的cell高度
+@property (copy, nonatomic) NSString *mCurrentHighlightString; //当前需要高亮的字符串
+@property (assign, nonatomic) BOOL mCacheHasHighlightString;  //是否包含需要高亮的字符串
+@property (copy, nonatomic) NSAttributedString *mCacheHighlightCompleteString; //包含高亮字符的富文本
+@end
+
 @implementation HDWindowLoggerItem
 ///获取item的拼接的打印内容
 - (NSString *)getFullContentString {
@@ -57,6 +64,54 @@
         return [NSString stringWithFormat:@"%@   >     %@\n%@",dateStr, self.mLogDebugContent, contentString];
     } else {
         return [NSString stringWithFormat:@"%@   >     %@",dateStr,contentString];
+    }
+}
+
+- (CGFloat)mCellHeight {
+    if (_mCellHeight == 0) {
+        NSString *contentString = [self getFullContentString];
+        NSMutableAttributedString *newString = [[NSMutableAttributedString alloc] initWithString: contentString attributes: [NSDictionary dictionaryWithObjectsAndKeys:[UIFont systemFontOfSize:13] ,NSFontAttributeName, nil]];
+        UILabel *label = [[UILabel alloc] init];
+        label.numberOfLines = 0;
+        [label setAttributedText:newString];
+        _mCellHeight = ceil([label sizeThatFits:CGSizeMake([UIScreen mainScreen].bounds.size.width, MAXFLOAT)].height) + 1;
+        return _mCellHeight;
+    } else {
+        return _mCellHeight;
+    }
+}
+
+- (void)getHighlightCompleteString:(NSString *)highlightString complete:(HighlightComplete)complete {
+    if (!highlightString || highlightString.length == 0) {
+        NSString *contentString = [self getFullContentString];
+        NSMutableAttributedString *newString = [[NSMutableAttributedString alloc] initWithString: contentString attributes: [NSDictionary dictionaryWithObjectsAndKeys:[UIFont systemFontOfSize:13] ,NSFontAttributeName, nil]];
+        self.mCacheHighlightCompleteString = newString;
+        self.mCacheHasHighlightString = false;
+        complete(self.mCacheHasHighlightString, newString);
+    } else if ([highlightString isEqualToString:self.mCurrentHighlightString]) {
+        //和上次高亮相同，直接用之前的回调
+        complete(self.mCacheHasHighlightString, self.mCacheHighlightCompleteString);
+    } else {
+        self.mCurrentHighlightString = highlightString;
+        NSString *contentString = [self getFullContentString];
+        NSMutableAttributedString *newString = [[NSMutableAttributedString alloc] initWithString: contentString attributes: [NSDictionary dictionaryWithObjectsAndKeys:[UIFont systemFontOfSize:13] ,NSFontAttributeName, nil]];
+        NSError *error;
+        NSRegularExpression *regex = [[NSRegularExpression alloc] initWithPattern:highlightString options:NSRegularExpressionCaseInsensitive error:&error];
+        if (error) {
+            self.mCacheHighlightCompleteString = newString;
+            self.mCacheHasHighlightString = false;
+            complete(self.mCacheHasHighlightString, newString);
+        } else {
+            self.mCacheHasHighlightString = false;
+            [regex enumerateMatchesInString:contentString options:NSMatchingReportCompletion range:NSMakeRange(0, [contentString length]) usingBlock:^(NSTextCheckingResult *result, NSMatchingFlags flags, BOOL *stop) {
+                [newString addAttribute:NSForegroundColorAttributeName value:[UIColor colorWithRed:255.0/255.0 green:0.0 blue:0.0 alpha:1.0] range:result.range];
+                if (result != nil) {
+                    self.mCacheHasHighlightString = true;
+                }
+                self.mCacheHighlightCompleteString = newString;
+                complete(self.mCacheHasHighlightString, newString);
+            }];
+        }
     }
 }
 @end
@@ -173,14 +228,14 @@
         if ([self defaultWindowLogger].mMaxLogCount > 0 && [self defaultWindowLogger].mLogDataArray.count > [self defaultWindowLogger].mMaxLogCount) {
             [[self defaultWindowLogger].mLogDataArray removeObjectAtIndex:0];
         }
-        [[self defaultWindowLogger].mTableView reloadData];
+        
+        [[self defaultWindowLogger] p_reloadFilter];
         //滚动到底部
         if ([self defaultWindowLogger].mLogDataArray.count > 0 && [self defaultWindowLogger].mAutoScrollSwitch.isOn) {
             dispatch_async(dispatch_get_main_queue(), ^{
                 [[self defaultWindowLogger].mTableView  scrollToRowAtIndexPath:[NSIndexPath indexPathForRow:[self defaultWindowLogger].mLogDataArray.count - 1 inSection:0] atScrollPosition:UITableViewScrollPositionBottom animated:YES];
             });
         }
-        [[self defaultWindowLogger] p_reloadFilter];
     });
 }
 
@@ -350,14 +405,9 @@
     }
 }
 
-///更新筛选数据
+///更新筛选查找的数据
 - (void)p_reloadFilter {
     //恢复默认显示
-    if (self.mFilterIndexArray.count > 0) {
-        [UIView performWithoutAnimation:^{
-            [self.mTableView reloadRowsAtIndexPaths:self.mFilterIndexArray withRowAnimation:UITableViewRowAnimationNone];
-        }];
-    }
     [self.mFilterIndexArray removeAllObjects];
     self.mPreviousButton.enabled = false;
     self.mNextButton.enabled = false;
@@ -370,16 +420,23 @@
                 dispatch_async(dispatch_get_main_queue(), ^{
                     NSIndexPath *indexPath = [NSIndexPath indexPathForRow:idx inSection:0];
                     [self.mFilterIndexArray addObject:indexPath];
-                    [UIView performWithoutAnimation:^{
-                        [self.mTableView reloadRowsAtIndexPaths:@[indexPath] withRowAnimation:UITableViewRowAnimationFade];
-                    }];
                     self.mPreviousButton.enabled = true;
                     self.mNextButton.enabled = true;
                     self.mCurrentSearchIndex = self.mFilterIndexArray.count - 1;
-                    self.mSearchNumLabel.text = [NSString stringWithFormat:@"%ld/%lu",(long)self.mCurrentSearchIndex + 1, self.mFilterIndexArray.count];
+                    self.mSearchNumLabel.text = [NSString stringWithFormat:@"%ld/%lu",(long)self.mCurrentSearchIndex + 1, (unsigned long)self.mFilterIndexArray.count];
+                });
+            }
+            if (idx == copyArray.count - 1) {
+                *stop = YES;
+                dispatch_async(dispatch_get_main_queue(), ^{
+                    [self.mTableView reloadData];
                 });
             }
         }];
+    } else {
+        dispatch_async(dispatch_get_main_queue(), ^{
+            [self.mTableView reloadData];
+        });
     }
 }
 
@@ -390,8 +447,9 @@
         if (self.mCurrentSearchIndex < 0) {
             self.mCurrentSearchIndex = self.mFilterIndexArray.count - 1;
         }
-        self.mSearchNumLabel.text = [NSString stringWithFormat:@"%ld/%lu",(long)self.mCurrentSearchIndex + 1, self.mFilterIndexArray.count];
-        [self.mTableView  scrollToRowAtIndexPath:[NSIndexPath indexPathForRow:self.mCurrentSearchIndex inSection:0] atScrollPosition:UITableViewScrollPositionTop animated:YES];
+        self.mSearchNumLabel.text = [NSString stringWithFormat:@"%ld/%lu",(long)self.mCurrentSearchIndex + 1, (unsigned long)self.mFilterIndexArray.count];
+        NSIndexPath *indexPath = [self.mFilterIndexArray objectAtIndex:self.mCurrentSearchIndex];
+        [self.mTableView  scrollToRowAtIndexPath:indexPath atScrollPosition:UITableViewScrollPositionTop animated:YES];
     }
 }
 
@@ -402,8 +460,9 @@
         if (self.mCurrentSearchIndex == self.mFilterIndexArray.count) {
             self.mCurrentSearchIndex = 0;
         }
-        self.mSearchNumLabel.text = [NSString stringWithFormat:@"%ld/%lu",(long)self.mCurrentSearchIndex + 1, self.mFilterIndexArray.count];
-        [self.mTableView scrollToRowAtIndexPath:[NSIndexPath indexPathForRow:self.mCurrentSearchIndex inSection:0] atScrollPosition:UITableViewScrollPositionTop animated:YES];
+        self.mSearchNumLabel.text = [NSString stringWithFormat:@"%ld/%lu",(long)self.mCurrentSearchIndex + 1, (unsigned long)self.mFilterIndexArray.count];
+        NSIndexPath *indexPath = [self.mFilterIndexArray objectAtIndex:self.mCurrentSearchIndex];
+        [self.mTableView scrollToRowAtIndexPath:indexPath atScrollPosition:UITableViewScrollPositionTop animated:YES];
     }
 }
 
@@ -686,7 +745,7 @@
     } else {
         cell.backgroundColor = [UIColor clearColor];
     }
-    [cell updateWithLoggerItem:item withSearchText:self.mSearchBar.text];
+    [cell updateWithLoggerItem:item withHighlightText:self.mSearchBar.text];
     return cell;
 }
 
@@ -694,12 +753,7 @@
 #pragma mark - UITableViewDelegate
 - (CGFloat)tableView:(UITableView *)tableView heightForRowAtIndexPath:(NSIndexPath *)indexPath {
     HDWindowLoggerItem *item = [self.mLogDataArray objectAtIndex:indexPath.row];
-    UILabel *label = [[UILabel alloc] init];
-    label.numberOfLines = 0;
-    label.font = [UIFont systemFontOfSize:13];
-    [label setText:[item getFullContentString]];
-    CGSize size = [label sizeThatFits:CGSizeMake([UIScreen mainScreen].bounds.size.width, MAXFLOAT)];
-    return ceil(size.height) + 1;
+    return item.mCellHeight;
 }
 
 - (CGFloat)tableView:(UITableView *)tableView heightForHeaderInSection:(NSInteger)section {
@@ -741,6 +795,9 @@
 
 - (void)searchBarTextDidEndEditing:(UISearchBar *)searchBar {
     [searchBar resignFirstResponder];
+    [UIView performWithoutAnimation:^{
+         [self.mTableView reloadRowsAtIndexPaths:self.mFilterIndexArray withRowAnimation:UITableViewRowAnimationNone];
+    }];
 }
 
 - (void)searchBarSearchButtonClicked:(UISearchBar *)searchBar {

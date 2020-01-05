@@ -14,7 +14,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 @interface HDLoggerTableViewCell : UITableViewCell
 
-- (void)updateWithLoggerItem:(HDWindowLoggerItem *)item withSearchText:(NSString *)searchText;
+- (void)updateWithLoggerItem:(HDWindowLoggerItem *)item withHighlightText:(NSString *)highlightText;
 @end
 
 NS_ASSUME_NONNULL_END
