@@ -149,7 +149,15 @@
     static HDWindowLogger *defaultLogger = nil;
     static dispatch_once_t onceToken;
     dispatch_once(&onceToken, ^{
-        defaultLogger = [[HDWindowLogger alloc] init];
+        if (@available(iOS 13.0, *)) {
+            if ([UIApplication sharedApplication].connectedScenes.count > 0) {
+                UIWindowScene *scene = [[[UIApplication sharedApplication].connectedScenes allObjects] firstObject];
+                defaultLogger = [[HDWindowLogger alloc] initWithWindowScene:scene];
+            }
+        }
+        if (!defaultLogger) {
+            defaultLogger = [[HDWindowLogger alloc] init];
+        }
         defaultLogger.mMaxLogCount = 0;
         defaultLogger.mCompleteLogOut = true;
         defaultLogger.mDebugAreaLogOut = true;
@@ -166,6 +174,9 @@
             float statusBarHeight = 0;
             if (@available(iOS 13.0, *)) {
                 statusBarHeight = self.windowScene.statusBarManager.statusBarFrame.size.height;
+                if (statusBarHeight == 0) {
+                    statusBarHeight = [UIApplication sharedApplication].statusBarFrame.size.height;
+                }
             } else {
                 statusBarHeight = [UIApplication sharedApplication].statusBarFrame.size.height;
             }
@@ -180,6 +191,28 @@
     }
     return self;
 }
+
+#ifdef __IPHONE_13_0
+- (instancetype)initWithWindowScene:(UIWindowScene *)windowScene {
+    self = [super initWithWindowScene:windowScene];
+    if (self) {
+        dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(0.1 * NSEC_PER_SEC)), dispatch_get_main_queue(), ^{
+                   float statusBarHeight = self.windowScene.statusBarManager.statusBarFrame.size.height;
+                   if (statusBarHeight == 0) {
+                       statusBarHeight = [UIApplication sharedApplication].statusBarFrame.size.height;
+                   }
+                   [self setFrame:CGRectMake(0, statusBarHeight, [UIScreen mainScreen].bounds.size.width, 342)];
+                   self.rootViewController = [UIViewController new]; // suppress warning
+                   self.windowLevel = UIWindowLevelStatusBar;
+                   [self setBackgroundColor:[UIColor clearColor]];
+                   self.userInteractionEnabled = YES;
+                   [self p_createUI];
+                   [self p_bindClick];
+               });
+    }
+    return self;
+}
+#endif
 
 - (BOOL)mPasswordCorrect {
     return [self.mTextPassword isEqualToString:self.mPrivacyPassword];
