@@ -2,9 +2,12 @@
 
 ![](./ReadmeImage/cocoapodTool.png)
 
-iOS端将输出日志log悬浮显示在屏幕上，可以生成日志文件分享，便于在真机没有连接xcode的情况下调试信息。可以分享、筛选log等操作
+iOS端将输出日志log悬浮显示在屏幕上，可以生成日志文件分享，便于在真机没有连接xcode的情况下调试信息。可以分享、筛选log等操作。
 
 The iOS side displays the output log log on the screen, and can generate log file sharing, which is convenient for debugging information when the real machine is not connected to xcode. Log information can be filtered and shared
+
+**2.0版本开始采用Masonry自动布局，如果不想引用，可以使用1.6.11版本。Version 2.0 began to use Masonry automatic layout, if you don't want to quote, you can use version 1.6.11.
+**
 
 ### [Document for English](#english) | [Swift Version](https://github.com/DamonHu/HDWindowLoggerSwift)
 

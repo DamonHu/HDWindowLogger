@@ -9,9 +9,9 @@
 #import "HDWindowLogger.h"
 #import "HDLoggerTableViewCell.h"
 #import <CommonCrypto/CommonCryptor.h>
+#import <Masonry.h>
 
 @interface HDWindowLoggerItem ()
-@property (assign, nonatomic) CGFloat mCellHeight;  //内容的cell高度
 @property (copy, nonatomic) NSString *mCurrentHighlightString; //当前需要高亮的字符串
 @property (assign, nonatomic) BOOL mCacheHasHighlightString;  //是否包含需要高亮的字符串
 @property (copy, nonatomic) NSAttributedString *mCacheHighlightCompleteString; //包含高亮字符的富文本
@@ -67,20 +67,6 @@
     }
 }
 
-- (CGFloat)mCellHeight {
-    if (_mCellHeight == 0) {
-        NSString *contentString = [self getFullContentString];
-        NSMutableAttributedString *newString = [[NSMutableAttributedString alloc] initWithString: contentString attributes: [NSDictionary dictionaryWithObjectsAndKeys:[UIFont systemFontOfSize:13] ,NSFontAttributeName, nil]];
-        UILabel *label = [[UILabel alloc] init];
-        label.numberOfLines = 0;
-        [label setAttributedText:newString];
-        _mCellHeight = ceil([label sizeThatFits:CGSizeMake([UIScreen mainScreen].bounds.size.width, MAXFLOAT)].height) + 1;
-        return _mCellHeight;
-    } else {
-        return _mCellHeight;
-    }
-}
-
 - (void)getHighlightCompleteString:(NSString *)highlightString complete:(HighlightComplete)complete {
     if (!highlightString || highlightString.length == 0) {
         NSString *contentString = [self getFullContentString];
@@ -129,6 +115,7 @@
 @property (strong, nonatomic) UITextField *mPasswordTextField;
 @property (copy, nonatomic) NSString *mTextPassword;         //输入的解密密码
 @property (strong, nonatomic) UIButton *mPasswordButton;
+@property (strong, nonatomic) UIButton *mScaleButton;
 @property (strong, nonatomic) UIButton *mHideButton;
 @property (strong, nonatomic) UIButton *mShareButton;
 @property (strong, nonatomic) UIWindow *mFloatWindow;
@@ -138,6 +125,7 @@
 @property (strong, nonatomic) UIButton *mPreviousButton;      //上一条
 @property (strong, nonatomic) UIButton *mNextButton;          //下一条
 @property (strong, nonatomic) UILabel *mSearchNumLabel;       //搜索条数
+@property (strong, nonatomic) UILabel *mTipLabel;       //显示
 @property (assign, nonatomic) NSInteger mCurrentSearchIndex;  //当前搜索到的索引
 @end
 
@@ -149,20 +137,9 @@
     static HDWindowLogger *defaultLogger = nil;
     static dispatch_once_t onceToken;
     dispatch_once(&onceToken, ^{
-        if (@available(iOS 13.0, *)) {
-            if ([UIApplication sharedApplication].connectedScenes.count > 0) {
-                UIWindowScene *scene = [[[UIApplication sharedApplication].connectedScenes allObjects] firstObject];
-                defaultLogger = [[HDWindowLogger alloc] initWithWindowScene:scene];
-            }
-        }
         if (!defaultLogger) {
             defaultLogger = [[HDWindowLogger alloc] init];
         }
-        defaultLogger.mMaxLogCount = 0;
-        defaultLogger.mCompleteLogOut = true;
-        defaultLogger.mDebugAreaLogOut = true;
-        defaultLogger.mPrivacyPassword = @"";
-        defaultLogger.mTextPassword = @"";
     });
     return defaultLogger;
 }
@@ -170,49 +147,21 @@
 - (instancetype)init {
     self = [super init];
     if (self) {
-        dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(0.1 * NSEC_PER_SEC)), dispatch_get_main_queue(), ^{
-            float statusBarHeight = 0;
-            if (@available(iOS 13.0, *)) {
-                statusBarHeight = self.windowScene.statusBarManager.statusBarFrame.size.height;
-                if (statusBarHeight == 0) {
-                    statusBarHeight = [UIApplication sharedApplication].statusBarFrame.size.height;
-                }
-            } else {
-                statusBarHeight = [UIApplication sharedApplication].statusBarFrame.size.height;
-            }
-            [self setFrame:CGRectMake(0, statusBarHeight, [UIScreen mainScreen].bounds.size.width, 342)];
-            self.rootViewController = [UIViewController new]; // suppress warning
-            self.windowLevel = UIWindowLevelStatusBar;
-            [self setBackgroundColor:[UIColor clearColor]];
-            self.userInteractionEnabled = YES;
-            [self p_createUI];
-            [self p_bindClick];
-        });
+        self.rootViewController = [UIViewController new]; // suppress warning
+        self.windowLevel = UIWindowLevelStatusBar;
+        [self setBackgroundColor:[UIColor clearColor]];
+        self.mMaxLogCount = 0;
+        self.mCompleteLogOut = true;
+        self.mDebugAreaLogOut = true;
+        self.mPrivacyPassword = @"";
+        self.mTextPassword = @"";
+        self.userInteractionEnabled = YES;
+        [self p_createUI];
+        [self p_bindClick];
     }
     return self;
 }
 
-#ifdef __IPHONE_13_0
-- (instancetype)initWithWindowScene:(UIWindowScene *)windowScene {
-    self = [super initWithWindowScene:windowScene];
-    if (self) {
-        dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(0.1 * NSEC_PER_SEC)), dispatch_get_main_queue(), ^{
-                   float statusBarHeight = self.windowScene.statusBarManager.statusBarFrame.size.height;
-                   if (statusBarHeight == 0) {
-                       statusBarHeight = [UIApplication sharedApplication].statusBarFrame.size.height;
-                   }
-                   [self setFrame:CGRectMake(0, statusBarHeight, [UIScreen mainScreen].bounds.size.width, 342)];
-                   self.rootViewController = [UIViewController new]; // suppress warning
-                   self.windowLevel = UIWindowLevelStatusBar;
-                   [self setBackgroundColor:[UIColor clearColor]];
-                   self.userInteractionEnabled = YES;
-                   [self p_createUI];
-                   [self p_bindClick];
-               });
-    }
-    return self;
-}
-#endif
 
 - (BOOL)mPasswordCorrect {
     return [self.mTextPassword isEqualToString:self.mPrivacyPassword];
@@ -323,55 +272,142 @@
 #pragma mark -
 #pragma mark - Private Method
 - (void)p_createUI {
+    [self setFrame:CGRectMake(0, 0, [UIScreen mainScreen].bounds.size.width, 342)];
     ///添加主视图
     [self.rootViewController.view addSubview:self.mBGView];
-    [self.mBGView setFrame:self.bounds];
+    [self.mBGView mas_makeConstraints:^(MASConstraintMaker *make) {
+        if (@available(iOS 11.0, *)) {
+            make.top.equalTo(self.rootViewController.view.mas_safeAreaLayoutGuideTop);
+        } else {
+            make.top.equalTo(self.rootViewController.mas_topLayoutGuideBottom);
+        }
+        make.left.right.bottom.equalTo(self.rootViewController.view);
+    }];
     
     //按钮
+    [self.mBGView addSubview:self.mScaleButton];
+    [self.mScaleButton mas_makeConstraints:^(MASConstraintMaker *make) {
+        make.left.top.equalTo(self.mBGView);
+        make.width.mas_equalTo([UIScreen mainScreen].bounds.size.width/4.0);
+        make.height.mas_equalTo(40);
+    }];
+    
     [self.mBGView addSubview:self.mHideButton];
-    [self.mHideButton setFrame:CGRectMake(0, 0, [UIScreen mainScreen].bounds.size.width/3.0, 40)];
+    [self.mHideButton mas_makeConstraints:^(MASConstraintMaker *make) {
+        make.top.equalTo(self.mScaleButton);
+        make.left.equalTo(self.mScaleButton.mas_right);
+        make.width.mas_equalTo([UIScreen mainScreen].bounds.size.width/4.0);
+        make.height.mas_equalTo(40);
+    }];
+    
     [self.mBGView addSubview:self.mShareButton];
-    [self.mShareButton setFrame:CGRectMake([UIScreen mainScreen].bounds.size.width/3.0, 0, [UIScreen mainScreen].bounds.size.width/3.0, 40)];
+    [self.mShareButton mas_makeConstraints:^(MASConstraintMaker *make) {
+        make.left.equalTo(self.mHideButton.mas_right);
+        make.width.height.top.equalTo(self.mHideButton);
+    }];
     [self.mBGView addSubview:self.mCleanButton];
-    [self.mCleanButton setFrame:CGRectMake([UIScreen mainScreen].bounds.size.width*2/3.0, 0, [UIScreen mainScreen].bounds.size.width/3.0, 40)];
+    [self.mCleanButton mas_makeConstraints:^(MASConstraintMaker *make) {
+        make.left.equalTo(self.mShareButton.mas_right);
+        make.width.height.top.equalTo(self.mHideButton);
+    }];
+    
     //解密
     [self.mBGView addSubview:self.mPasswordTextField];
-    self.mPasswordTextField.frame = CGRectMake(0, 40, [UIScreen mainScreen].bounds.size.width/3.0 + 50, 40);
+    [self.mPasswordTextField mas_makeConstraints:^(MASConstraintMaker *make) {
+        make.left.equalTo(self.mBGView);
+        make.top.equalTo(self.mHideButton.mas_bottom);
+        make.width.mas_equalTo([UIScreen mainScreen].bounds.size.width/3.0 + 50);
+        make.height.mas_equalTo(40);
+    }];
     [self.mBGView addSubview:self.mPasswordButton];
-    self.mPasswordButton.frame = CGRectMake([UIScreen mainScreen].bounds.size.width/3.0 + 50, 40, [UIScreen mainScreen].bounds.size.width/3.0 - 50, 40);
+    [self.mPasswordButton mas_makeConstraints:^(MASConstraintMaker *make) {
+        make.left.equalTo(self.mPasswordTextField.mas_right);
+        make.top.equalTo(self.mPasswordTextField);
+        make.width.mas_equalTo([UIScreen mainScreen].bounds.size.width/3.0 - 50);
+        make.height.mas_equalTo(40);
+    }];
+    
+    
+    [self.mBGView addSubview:self.mAutoScrollSwitch];
+    [self.mAutoScrollSwitch mas_makeConstraints:^(MASConstraintMaker *make) {
+        make.right.equalTo(self.mBGView).offset(-10);
+        make.centerY.equalTo(self.mPasswordButton);
+    }];
+    
     //开关视图
     [self.mBGView addSubview:self.mSwitchLabel];
-    [self.mSwitchLabel setFrame:CGRectMake([UIScreen mainScreen].bounds.size.width * 2.0 /3.0 + 6, 40, 90, 40)];
-    [self.mBGView addSubview:self.mAutoScrollSwitch];
-    [self.mAutoScrollSwitch setFrame:CGRectMake([UIScreen mainScreen].bounds.size.width - 60, 45, 60, 40)];
+    [self.mSwitchLabel mas_makeConstraints:^(MASConstraintMaker *make) {
+        make.left.equalTo(self.mPasswordButton.mas_right);
+        make.right.equalTo(self.mAutoScrollSwitch.mas_left);
+        make.centerY.equalTo(self.mPasswordButton);
+    }];
     
     //滚动日志窗
     [self.mBGView addSubview:self.mTableView];
-    [self.mTableView setFrame:CGRectMake(0, 80, [UIScreen mainScreen].bounds.size.width, 220)];
+    [self.mTableView mas_makeConstraints:^(MASConstraintMaker *make) {
+        make.left.right.equalTo(self.mBGView);
+        make.top.equalTo(self.mPasswordTextField.mas_bottom);
+        make.bottom.equalTo(self.mBGView).offset(-60);
+    }];
     
     //搜索
     [self.mBGView addSubview:self.mSearchBar];
-    [self.mSearchBar setFrame:CGRectMake(0, 300, [UIScreen mainScreen].bounds.size.width - 180, 40)];
+    [self.mSearchBar mas_makeConstraints:^(MASConstraintMaker *make) {
+        make.top.equalTo(self.mTableView.mas_bottom);
+        make.left.equalTo(self.mBGView);
+        make.bottom.equalTo(self.mBGView).offset(-20);
+        make.width.mas_equalTo([UIScreen mainScreen].bounds.size.width - 180);
+    }];
+    
     //
     [self.mBGView addSubview:self.mPreviousButton];
-    [self.mPreviousButton setFrame:CGRectMake([UIScreen mainScreen].bounds.size.width - 180, 300, 60, 40)];
+    [self.mPreviousButton mas_makeConstraints:^(MASConstraintMaker *make) {
+        make.top.bottom.equalTo(self.mSearchBar);
+        make.left.equalTo(self.mSearchBar.mas_right);
+        make.width.mas_equalTo(60);
+    }];
     
     [self.mBGView addSubview:self.mNextButton];
-    [self.mNextButton setFrame:CGRectMake([UIScreen mainScreen].bounds.size.width - 120, 300, 60, 40)];
+    [self.mNextButton mas_makeConstraints:^(MASConstraintMaker *make) {
+        make.top.bottom.equalTo(self.mSearchBar);
+        make.left.equalTo(self.mPreviousButton.mas_right);
+        make.width.mas_equalTo(60);
+    }];
     
     [self.mBGView addSubview:self.mSearchNumLabel];
-    [self.mSearchNumLabel setFrame:CGRectMake([UIScreen mainScreen].bounds.size.width - 60, 300, 60, 40)];
+    [self.mSearchNumLabel mas_makeConstraints:^(MASConstraintMaker *make) {
+        make.top.bottom.equalTo(self.mSearchBar);
+        make.left.equalTo(self.mNextButton.mas_right);
+        make.right.equalTo(self.mBGView);
+    }];
+    
+    [self.mBGView addSubview:self.mTipLabel];
+    [self.mTipLabel mas_makeConstraints:^(MASConstraintMaker *make) {
+        make.left.right.equalTo(self.mBGView);
+        make.top.equalTo(self.mSearchBar.mas_bottom);
+        make.bottom.equalTo(self.mBGView);
+    }];
 }
 
 - (void)p_bindClick {
+    [self.mScaleButton addTarget:self action:@selector(p_scale) forControlEvents:UIControlEventTouchUpInside];
     [self.mHideButton addTarget:self action:@selector(p_hideLogWindow) forControlEvents:UIControlEventTouchUpInside];
     [self.mCleanButton addTarget:self action:@selector(p_cleanLog) forControlEvents:UIControlEventTouchUpInside];
     [self.mShareButton addTarget:self action:@selector(p_share) forControlEvents:UIControlEventTouchUpInside];
     [self.mPasswordButton addTarget:self action:@selector(p_decrypt) forControlEvents:UIControlEventTouchUpInside];
     [self.mPreviousButton addTarget:self action:@selector(p_previous) forControlEvents:UIControlEventTouchUpInside];
     [self.mNextButton addTarget:self action:@selector(p_next) forControlEvents:UIControlEventTouchUpInside];
+    
 }
 
+- (void)p_scale {
+    self.mScaleButton.selected = !self.mScaleButton.isSelected;
+    if (self.mScaleButton.isSelected) {
+        [self setFrame:CGRectMake(0, 0, [UIScreen mainScreen].bounds.size.width, [UIScreen mainScreen].bounds.size.height - 20)];
+    } else {
+        [self setFrame:CGRectMake(0, 0, [UIScreen mainScreen].bounds.size.width, 350)];
+    }
+}
 
 - (void)p_hideLogWindow {
     [HDWindowLogger hideLogWindow];
@@ -605,8 +641,20 @@
         _mTableView.backgroundColor = [UIColor clearColor];
         _mTableView.separatorColor = [UIColor colorWithRed:242.0/255.0 green:242.0/255.0 blue:240.0/255.0 alpha:1.0];
         _mTableView.separatorStyle = UITableViewCellSeparatorStyleSingleLine;
+        _mTableView.separatorInset = UIEdgeInsetsMake(0, 5, 0, 5);
+        _mTableView.estimatedRowHeight = 10;
+        _mTableView.rowHeight = UITableViewAutomaticDimension;
     }
     return _mTableView;
+}
+
+- (UIButton *)mScaleButton {
+    if (!_mScaleButton) {
+        _mScaleButton = [UIButton buttonWithType:UIButtonTypeCustom];
+        [_mScaleButton setBackgroundColor:[UIColor colorWithRed:168.0/255.0 green:223.0/255.0 blue:101.0/255.0 alpha:1.0]];
+        [_mScaleButton setTitle:NSLocalizedString(@"伸缩", nil) forState:UIControlStateNormal];
+    }
+    return _mScaleButton;
 }
 
 - (UIButton *)mCleanButton {
@@ -654,7 +702,7 @@
 - (UIButton *)mPasswordButton {
     if (!_mPasswordButton) {
         _mPasswordButton = [UIButton buttonWithType:UIButtonTypeCustom];
-        _mPasswordButton.backgroundColor = [UIColor colorWithRed:66.0/255.0 green:230.0/255.0 blue:164.0/255.0 alpha:1.0];
+        _mPasswordButton.backgroundColor = [UIColor colorWithRed:27.0/255.0 green:108.0/255.0 blue:168.0/255.0 alpha:1.0];
         [_mPasswordButton setTitle:NSLocalizedString(@"解密", comment: @"") forState:UIControlStateNormal];
         [_mPasswordButton setTitleColor:[UIColor colorWithRed:255.0/255.0 green:255.0/255.0 blue:255.0/255.0 alpha:1.0] forState:UIControlStateNormal];
         _mPasswordButton.layer.masksToBounds = true;
@@ -701,7 +749,7 @@
     if (!_mSwitchLabel) {
         _mSwitchLabel = [[UILabel alloc] init];
         _mSwitchLabel.text = NSLocalizedString(@"自动滚动", nil);
-        _mSwitchLabel.textAlignment = NSTextAlignmentLeft;
+        _mSwitchLabel.textAlignment = NSTextAlignmentCenter;
         _mSwitchLabel.font = [UIFont systemFontOfSize:13];
         _mSwitchLabel.textColor = [UIColor whiteColor];
     }
@@ -758,6 +806,18 @@
     return _mSearchNumLabel;
 }
 
+- (UILabel *)mTipLabel {
+    if (!_mTipLabel) {
+        _mTipLabel = [[UILabel alloc] init];
+        _mTipLabel.text = @"HDWindowLogger v2.0";
+        _mTipLabel.textAlignment = NSTextAlignmentCenter;
+        _mTipLabel.font = [UIFont systemFontOfSize:12];
+        _mTipLabel.textColor = [UIColor whiteColor];
+        _mTipLabel.backgroundColor = [UIColor colorWithRed:0 green:0 blue:0 alpha:0.0];
+    }
+    return _mTipLabel;
+}
+
 #pragma mark -
 #pragma mark - UITableViewDataSource
 - (NSInteger)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section {
@@ -784,10 +844,6 @@
 
 #pragma mark -
 #pragma mark - UITableViewDelegate
-- (CGFloat)tableView:(UITableView *)tableView heightForRowAtIndexPath:(NSIndexPath *)indexPath {
-    HDWindowLoggerItem *item = [self.mLogDataArray objectAtIndex:indexPath.row];
-    return item.mCellHeight;
-}
 
 - (CGFloat)tableView:(UITableView *)tableView heightForHeaderInSection:(NSInteger)section {
     return 0.00001f;

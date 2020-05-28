@@ -8,6 +8,7 @@
 
 #import "HDLoggerTableViewCell.h"
 #import "HDWindowLogger.h"
+#import <Masonry.h>
 
 @interface HDLoggerTableViewCell ()
 @property (strong, nonatomic) UILabel *mContentLabel;
@@ -26,6 +27,12 @@
 - (void)p_createUI {
     self.backgroundColor = [UIColor clearColor];
     [self.contentView addSubview:self.mContentLabel];
+    [self.mContentLabel mas_makeConstraints:^(MASConstraintMaker *make) {
+        make.left.equalTo(self.contentView).offset(10);
+        make.right.equalTo(self.contentView).offset(-10);
+        make.top.bottom.equalTo(self.contentView);
+    }];
+
 }
 
 - (void)updateWithLoggerItem:(HDWindowLoggerItem *)item withHighlightText:(NSString *)highlightText {
@@ -79,7 +86,6 @@
 - (UILabel *)mContentLabel {
     if (!_mContentLabel) {
         _mContentLabel = [[UILabel alloc] init];
-        
         _mContentLabel.numberOfLines = 0;
         _mContentLabel.font = [UIFont systemFontOfSize:13];
     }

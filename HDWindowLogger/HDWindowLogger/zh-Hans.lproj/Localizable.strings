@@ -6,6 +6,7 @@
   Copyright © 2019 Damon. All rights reserved.
 */
 "HDWindowLogger: 点击对应日志可快速复制" = "HDWindowLogger: 点击对应日志可快速复制";
+"伸缩" = "伸缩";
 "清除Log" = "清除Log";
 "隐藏" = "隐藏";
 "分享" = "分享Log";
