@@ -272,7 +272,7 @@
 #pragma mark -
 #pragma mark - Private Method
 - (void)p_createUI {
-    [self setFrame:CGRectMake(0, 0, [UIScreen mainScreen].bounds.size.width, 342)];
+    [self setFrame:CGRectMake(0, 0, [UIScreen mainScreen].bounds.size.width, 350)];
     ///添加主视图
     [self.rootViewController.view addSubview:self.mBGView];
     [self.mBGView mas_makeConstraints:^(MASConstraintMaker *make) {
