@@ -8,7 +8,7 @@
 
 #import "HDLoggerTableViewCell.h"
 #import "HDWindowLogger.h"
-#import <Masonry.h>
+#import "Masonry.h"
 
 @interface HDLoggerTableViewCell ()
 @property (strong, nonatomic) UILabel *mContentLabel;
