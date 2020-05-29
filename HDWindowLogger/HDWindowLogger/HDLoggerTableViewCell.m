@@ -65,11 +65,6 @@
     }];
 }
 
-- (void)layoutSubviews {
-    [super layoutSubviews];
-    [self.mContentLabel setFrame:self.bounds];
-}
-
 - (void)awakeFromNib {
     [super awakeFromNib];
     // Initialization code
