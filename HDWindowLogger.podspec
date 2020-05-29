@@ -1,6 +1,6 @@
 Pod::Spec.new do |s|
 s.name = 'HDWindowLogger'
-s.version = '2.0.0'
+s.version = '2.0.1'
 s.license= { :type => "MIT", :file => "LICENSE" }
 s.summary = 'The iOS side displays the output log log on the screen, and can generate log file sharing, which is convenient for debugging information'
 s.homepage = 'https://github.com/DamonHu/HDWindowLogger'

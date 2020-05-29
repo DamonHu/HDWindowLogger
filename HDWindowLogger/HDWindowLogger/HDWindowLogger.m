@@ -9,7 +9,7 @@
 #import "HDWindowLogger.h"
 #import "HDLoggerTableViewCell.h"
 #import <CommonCrypto/CommonCryptor.h>
-#import <Masonry.h>
+#import "Masonry.h"
 
 @interface HDWindowLoggerItem ()
 @property (copy, nonatomic) NSString *mCurrentHighlightString; //当前需要高亮的字符串
