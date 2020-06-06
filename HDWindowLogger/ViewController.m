@@ -41,5 +41,7 @@
     HDNormalLog(dic);
     NSArray *array = @[@"2323232323",@"6666678798778",@"00000000"];
     HDWarnLog(array);
+    HDDebugLog(@"sss: %@",dic);
+//    HDNormalLog([NSString stringWithFormat:@"%@", dic]);
 }
 @end

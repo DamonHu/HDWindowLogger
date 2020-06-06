@@ -20,6 +20,8 @@ typedef NS_ENUM(NSUInteger, HDLogType) {
 
 #pragma mark -
 #pragma mark - 快捷宏定义输出类型
+#define HDDebugLog(format, ...) NSLog(@"[File:\(%@)]:[Line:\(%d):[Function:\(%@)]]-Log: \n%@",[[NSString stringWithUTF8String:__FILE__] lastPathComponent],__LINE__,[NSString stringWithFormat:@"%s",__FUNCTION__], [NSString stringWithFormat:(format), ##__VA_ARGS__]) //调试输出，不写入到窗口日志
+
 #define HDNormalLog(log) [HDWindowLogger printLog:log withLogType:kHDLogTypeNormal file:[[NSString stringWithUTF8String:__FILE__] lastPathComponent] line:__LINE__ functionName:[NSString stringWithFormat:@"%s",__FUNCTION__]]     //普通类型的输出
 #define HDWarnLog(log) [HDWindowLogger printLog:log withLogType:kHDLogTypeWarn file:[[NSString stringWithUTF8String:__FILE__] lastPathComponent] line:__LINE__ functionName:[NSString stringWithFormat:@"%s",__FUNCTION__]]         //警告类型的输出
 #define HDErrorLog(log) [HDWindowLogger printLog:log withLogType:kHDLogTypeError file:[[NSString stringWithUTF8String:__FILE__] lastPathComponent] line:__LINE__ functionName:[NSString stringWithFormat:@"%s",__FUNCTION__]]       //错误类型的输出

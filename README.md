@@ -62,6 +62,7 @@ You can drag the files in the `HDWindowLogger` folder to the project under the p
 The font colors of the three output methods are different, and the corresponding types of printLog are different.
 
 ```
+HDDebugLog(@"sss: %@",dic); 	//Debug output, the content will not be written to the window, only output in xcode
 HDNormalLog(@"点击按钮"); 	//Log's textColor is green
 HDWarnLog(@"点击按钮");		//log's textColor is yellow
 HDErrorLog(@"点击按钮");		//Log's textColor is red
@@ -223,6 +224,7 @@ pod 'HDWindowLogger'
 三种输出方式字体颜色显示不同，对应的printLog不同的类型
 
 ```
+HDDebugLog(@"sss: %@",dic); 	//调试输出，不会输出到窗口，只会显示在xcode调试区
 HDNormalLog(@"点击按钮"); 	//日志为绿色
 HDWarnLog(@"点击按钮");		//日志为黄色
 HDErrorLog(@"点击按钮");		//日志为红色
