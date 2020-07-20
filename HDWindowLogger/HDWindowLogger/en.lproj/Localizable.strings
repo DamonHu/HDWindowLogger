@@ -17,6 +17,7 @@
 "输入密码查看加密数据" = "Enter password to view";
 "该内容已加密，请解密后查看" = "This content is encrypted, please view it after decryption";
 "密码设置长度错误，需要32个字符" = "The password requires 32 characters";
+"密码未设置:" = "Password is not set:";
 "0条结果" = "result: 0";
 "上一条" = "Previous";
 "下一条" = "Next";
