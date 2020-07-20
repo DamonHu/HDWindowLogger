@@ -3,7 +3,7 @@
 	archiveVersion = 1;
 	classes = {
 	};
-	objectVersion = 50;
+	objectVersion = 51;
 	objects = {
 
 /* Begin PBXBuildFile section */
@@ -21,6 +21,7 @@
 		E40F7D3C229CE0BF00CDB3DB /* HDWindowLogger.m in Sources */ = {isa = PBXBuildFile; fileRef = E40F7D3B229CE0BF00CDB3DB /* HDWindowLogger.m */; };
 		E40F7D3F229CF7C700CDB3DB /* HDLoggerTableViewCell.m in Sources */ = {isa = PBXBuildFile; fileRef = E40F7D3E229CF7C700CDB3DB /* HDLoggerTableViewCell.m */; };
 		E40F7E6522A7C61B00CDB3DB /* Localizable.strings in Resources */ = {isa = PBXBuildFile; fileRef = E40F7E6722A7C61B00CDB3DB /* Localizable.strings */; };
+		E4E20EAF24C577F100AD12A3 /* HDWindowLoggerItem.m in Sources */ = {isa = PBXBuildFile; fileRef = E4E20EAE24C577F100AD12A3 /* HDWindowLoggerItem.m */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -70,6 +71,8 @@
 		E40F7D3E229CF7C700CDB3DB /* HDLoggerTableViewCell.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = HDLoggerTableViewCell.m; sourceTree = "<group>"; };
 		E40F7E6622A7C61B00CDB3DB /* en */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = en; path = en.lproj/Localizable.strings; sourceTree = "<group>"; };
 		E40F7E6822A7C65100CDB3DB /* zh-Hans */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = "zh-Hans"; path = "zh-Hans.lproj/Localizable.strings"; sourceTree = "<group>"; };
+		E4E20EAD24C577F100AD12A3 /* HDWindowLoggerItem.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = HDWindowLoggerItem.h; sourceTree = "<group>"; };
+		E4E20EAE24C577F100AD12A3 /* HDWindowLoggerItem.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = HDWindowLoggerItem.m; sourceTree = "<group>"; };
 		F28126A77FE47718D07F2AAC /* Pods_HDWindowLogger_HDWindowLoggerUITests.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_HDWindowLogger_HDWindowLoggerUITests.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		FFD518BE041C04E22CC21C99 /* Pods_HDWindowLoggerTests.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_HDWindowLoggerTests.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 /* End PBXFileReference section */
@@ -112,7 +115,6 @@
 				DAE9DA58542F85C6EFCE5EE3 /* Pods-HDWindowLoggerTests.debug.xcconfig */,
 				2A26EF34245B9CB4AC6CB33E /* Pods-HDWindowLoggerTests.release.xcconfig */,
 			);
-			name = Pods;
 			path = Pods;
 			sourceTree = "<group>";
 		};
@@ -191,6 +193,8 @@
 				E40F7D3D229CF7C700CDB3DB /* HDLoggerTableViewCell.h */,
 				E40F7D3E229CF7C700CDB3DB /* HDLoggerTableViewCell.m */,
 				E40F7E6722A7C61B00CDB3DB /* Localizable.strings */,
+				E4E20EAD24C577F100AD12A3 /* HDWindowLoggerItem.h */,
+				E4E20EAE24C577F100AD12A3 /* HDWindowLoggerItem.m */,
 			);
 			path = HDWindowLogger;
 			sourceTree = "<group>";
@@ -439,6 +443,7 @@
 				E40F7D17229CE0A800CDB3DB /* main.m in Sources */,
 				E40F7D09229CE0A700CDB3DB /* AppDelegate.m in Sources */,
 				E40F7D3F229CF7C700CDB3DB /* HDLoggerTableViewCell.m in Sources */,
+				E4E20EAF24C577F100AD12A3 /* HDWindowLoggerItem.m in Sources */,
 				E40F7D3C229CE0BF00CDB3DB /* HDWindowLogger.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -623,16 +628,16 @@
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				CODE_SIGN_STYLE = Manual;
-				DEVELOPMENT_TEAM = 5M4924XW7Y;
+				DEVELOPMENT_TEAM = SDWPRN2XF5;
 				INFOPLIST_FILE = HDWindowLogger/Info.plist;
 				IPHONEOS_DEPLOYMENT_TARGET = 10.0;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/Frameworks",
 				);
-				PRODUCT_BUNDLE_IDENTIFIER = com.lazypig.HDWindowLogger;
+				PRODUCT_BUNDLE_IDENTIFIER = com.blue.ttdw;
 				PRODUCT_NAME = "$(TARGET_NAME)";
-				PROVISIONING_PROFILE_SPECIFIER = dev;
+				PROVISIONING_PROFILE_SPECIFIER = dw_dev;
 				TARGETED_DEVICE_FAMILY = "1,2";
 			};
 			name = Debug;
