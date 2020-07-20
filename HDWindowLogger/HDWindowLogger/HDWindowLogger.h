@@ -7,16 +7,9 @@
 //
 
 #import <UIKit/UIKit.h>
-@class HDWindowLoggerItem;
+#import "HDWindowLoggerItem.h"
 
 NS_ASSUME_NONNULL_BEGIN
-
-typedef NS_ENUM(NSUInteger, HDLogType) {
-    kHDLogTypeNormal = 0,   //textColor #50d890
-    kHDLogTypeWarn,         //textColor #f6f49d
-    kHDLogTypeError,        //textColor #ff7676
-    kHDLogTypePrivacy       //textColor #42e6a4
-};
 
 #pragma mark -
 #pragma mark - 快捷宏定义输出类型
@@ -84,22 +77,6 @@ typedef NS_ENUM(NSUInteger, HDLogType) {
  @param logCount 0为不限制
  */
 + (void)setMaxLogCount:(NSInteger)logCount;
-@end
-
-#pragma mark -
-#pragma mark - 每个打印的item
-typedef void (^HighlightComplete)(BOOL hasHighlightStr, NSAttributedString *hightlightAttributedString);
-@interface HDWindowLoggerItem : NSObject
-@property (assign, nonatomic) HDLogType mLogItemType;
-@property (strong, nonatomic) id mLogContent;
-@property (copy, nonatomic) NSString *mLogDebugContent;
-@property (strong, nonatomic) NSDate *mCreateDate;
-
-///获取item的拼接的打印内容
-- (NSString *)getFullContentString;
-
-///设置需要高亮的字符串
-- (void)getHighlightCompleteString:(NSString *)highlightString complete:(HighlightComplete)complete;
 @end
 
 NS_ASSUME_NONNULL_END
