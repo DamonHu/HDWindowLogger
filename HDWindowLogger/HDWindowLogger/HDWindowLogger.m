@@ -48,7 +48,16 @@
     static dispatch_once_t onceToken;
     dispatch_once(&onceToken, ^{
         if (!defaultLogger) {
-            defaultLogger = [[HDWindowLogger alloc] init];
+            if (@available(iOS 13.0, *)) {
+                for (UIWindowScene *windowScene in [UIApplication sharedApplication].connectedScenes) {
+                    if (windowScene.activationState == UISceneActivationStateForegroundActive) {
+                        defaultLogger = [[HDWindowLogger alloc] initWithWindowScene:windowScene];
+                    }
+                }
+            }
+            if (!defaultLogger) {
+                defaultLogger = [[HDWindowLogger alloc] init];
+            }
         }
     });
     return defaultLogger;
@@ -72,6 +81,27 @@
     return self;
 }
 
+#ifdef __IPHONE_13_0
+- (instancetype)initWithWindowScene:(UIWindowScene *)windowScene {
+    self = [super initWithWindowScene:windowScene];
+    if (self) {
+        dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(0.1 * NSEC_PER_SEC)), dispatch_get_main_queue(), ^{
+            self.rootViewController = [UIViewController new]; // suppress warning
+            self.windowLevel = UIWindowLevelStatusBar;
+            [self setBackgroundColor:[UIColor clearColor]];
+            self.mMaxLogCount = 0;
+            self.mCompleteLogOut = true;
+            self.mDebugAreaLogOut = true;
+            self.mPrivacyPassword = @"";
+            self.mTextPassword = @"";
+            self.userInteractionEnabled = YES;
+            [self p_createUI];
+            [self p_bindClick];
+        });
+    }
+    return self;
+}
+#endif
 
 - (BOOL)mPasswordCorrect {
     return [self.mTextPassword isEqualToString:self.mPrivacyPassword];
@@ -580,6 +610,14 @@
 - (UIWindow *)mFloatWindow {
     if (!_mFloatWindow) {
         _mFloatWindow = [[UIWindow alloc] initWithFrame:CGRectMake([UIScreen mainScreen].bounds.size.width - 70, 50, 60, 60)];
+        if (@available(iOS 13.0, *)) {
+            for (UIWindowScene *windowScene in [UIApplication sharedApplication].connectedScenes) {
+                if (windowScene.activationState == UISceneActivationStateForegroundActive) {
+                    _mFloatWindow = [[UIWindow alloc] initWithWindowScene:windowScene];
+                    _mFloatWindow.frame = CGRectMake([UIScreen mainScreen].bounds.size.width - 70, 50, 60, 60);
+                }
+            }
+        }
         _mFloatWindow.rootViewController = [UIViewController new]; // suppress warning
         _mFloatWindow.windowLevel = UIWindowLevelAlert;
         [_mFloatWindow setBackgroundColor:[UIColor clearColor]];
