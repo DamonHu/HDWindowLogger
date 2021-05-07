@@ -9,9 +9,9 @@ The iOS side displays the output log log on the screen, and can generate log fil
 **2.0版本开始采用Masonry自动布局，如果不想引用，可以使用1.6.11版本。Version 2.0 began to use Masonry automatic layout, if you don't want to quote, you can use version 1.6.11.
 **
 
-### [Document for English](#english) | [Swift Version](https://github.com/DamonHu/HDWindowLoggerSwift)
+### [Document for English](#english) | [Swift Version](https://github.com/ZXKitCode/logger)
 
-### [中文文档](#chinese) | [Swift版本](https://github.com/DamonHu/HDWindowLoggerSwift)
+### [中文文档](#chinese) | [Swift版本](https://github.com/ZXKitCode/logger)
 
 
 <span id = "english"></span>
