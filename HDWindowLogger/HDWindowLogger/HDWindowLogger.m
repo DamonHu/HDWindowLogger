@@ -393,10 +393,23 @@
 }
 
 - (void)p_touchMove:(UIPanGestureRecognizer*)p {
-    CGPoint panPoint = [p locationInView:[[UIApplication sharedApplication] keyWindow]];
+    UIWindow *window = [self p_getCurrentWindow];
+    CGPoint panPoint = [p locationInView: window];
     if (p.state == UIGestureRecognizerStateChanged) {
         self.mFloatWindow.center = CGPointMake(panPoint.x, panPoint.y);
+        [p setTranslation:CGPointMake(0, 0) inView:self.mFloatWindow];
+    } else if (p.state == UIGestureRecognizerStateEnded || p.state == UIGestureRecognizerStateCancelled) {
+        CGFloat x = 50;
+        if (panPoint.x > window.bounds.size.width / 2.0) {
+            x = window.bounds.size.width - 50;
+        }
+        CGFloat y = MIN(MAX(120, panPoint.y), window.bounds.size.height - 140);
+        [p setTranslation:CGPointMake(0, 0) inView:self.mFloatWindow];
+        [UIView animateWithDuration:0.35 animations:^{
+            self.mFloatWindow.center = CGPointMake(x, y);
+        }];
     }
+    
 }
 
 ///更新筛选查找的数据
@@ -467,17 +480,47 @@
     [self.mTableView reloadData];
 }
 
-- (UIViewController *)p_getCurrentVC {
+- (UIWindow *)p_getCurrentWindow {
     UIWindow * window = [[UIApplication sharedApplication] keyWindow];
-    if (window.windowLevel != UIWindowLevelNormal) {
-        NSArray *windows = [[UIApplication sharedApplication] windows];
-        for(UIWindow * tmpWin in windows) {
-            if (tmpWin.windowLevel == UIWindowLevelNormal) {
-                window = tmpWin;
+    if (@available(iOS 13.0, *)) {
+        for (UIWindowScene *windowScene in [UIApplication sharedApplication].connectedScenes) {
+            if (windowScene.activationState == UISceneActivationStateForegroundActive) {
+                window = windowScene.windows.firstObject;
+                for (int i = 0; i<windowScene.windows.count; i++) {
+                    UIWindow *tempWin = [windowScene.windows objectAtIndex:i];
+                    if (tempWin.windowLevel == UIWindowLevelNormal) {
+                        window = tempWin;
+                        break;
+                    }
+                }
                 break;
             }
         }
     }
+    if (window == nil || window.windowLevel != UIWindowLevelNormal) {
+        for (int i = 0; i<[UIApplication sharedApplication].windows.count; i++) {
+            UIWindow *tempWin = [[UIApplication sharedApplication].windows objectAtIndex:i];
+            if (tempWin.windowLevel == UIWindowLevelNormal) {
+                window = tempWin;
+                break;
+            }
+        }
+    }
+    return window;
+}
+
+- (UIViewController *)p_getCurrentVC {
+//    UIWindow * window = [[UIApplication sharedApplication] keyWindow];
+//    if (window.windowLevel != UIWindowLevelNormal) {
+//        NSArray *windows = [[UIApplication sharedApplication] windows];
+//        for(UIWindow * tmpWin in windows) {
+//            if (tmpWin.windowLevel == UIWindowLevelNormal) {
+//                window = tmpWin;
+//                break;
+//            }
+//        }
+//    }
+    UIWindow * window = [self p_getCurrentWindow];
     UIViewController *result = nil;
     if ([window subviews].count>0) {
         UIView *frontView = [[window subviews] objectAtIndex:0];
